@@ -35,3 +35,5 @@ jobs:
         with:
           file: "build/libs/ij_vscode_run_config*.jar"
           tag_name: ${{ matrix.java }}-${{ matrix.os }}
+          draft: false
+          prerelease: false
