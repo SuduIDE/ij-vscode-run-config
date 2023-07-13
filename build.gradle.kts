@@ -4,7 +4,7 @@ plugins {
   id("org.jetbrains.intellij") version "1.13.3"
 }
 
-group = "com.vscode"
+group = "com.rri"
 version = "0.0.1"
 
 repositories {
