@@ -66,7 +66,8 @@ class ImportAction : AnAction() {
 
                 val javaAppCfgBuilder = JavaAppConfigBuilder(nameStr, event, currVSConfig)
                 try {
-                    val config: RunnerAndConfigurationSettings = javaAppCfgBuilder.setMainClass()
+                    val config: RunnerAndConfigurationSettings = javaAppCfgBuilder
+                        .setMainClass()
                         .setProgramArgs()
                         .setModulePaths()
                         .setClassPaths()
@@ -74,6 +75,7 @@ class ImportAction : AnAction() {
                         .setWorkingDirectory()
                         .setEnv()
                         .setShortenCommandLine()
+                        .setEncoding()
                         .build(runManager)
                     runManager.addConfiguration(config)
                     println("YEP $nameStr")
