@@ -24,8 +24,6 @@ class ImportAction : AnAction() {
     }
 
     override fun actionPerformed(event: AnActionEvent) {
-        // * "projectName"
-        // * Получаем из самого проекта (в идее каждому приложению соответствует свое окно)
         if (event.project == null)
             return
 
@@ -44,7 +42,6 @@ class ImportAction : AnAction() {
         for (currVSConfigElement: JsonElement in json.jsonObject["configurations"]?.jsonArray!!) {
             val currVSConfig: JsonObject = currVSConfigElement.jsonObject
 
-            // * "type"
             if (currVSConfig["type"]?.jsonPrimitive?.content != "java")
                 continue
 
@@ -57,9 +54,7 @@ class ImportAction : AnAction() {
 //                val sourcePaths = ???
 //                val JDK = ???
 //                val beforeRunTasks = appCfg.beforeRunTasks
-//                val encoding = currVSConfig["encoding"]
 //                val classpathModifications = appCfg.classpathModifications
-//                val javaExec = currVSConfig["javaExec"]
 //                val stepFilters = currVSConfig["stepFilters"]
 //                val inputRedirect = ???
 //                val suppressMultipleSessionWarning = ???
@@ -68,6 +63,7 @@ class ImportAction : AnAction() {
                 try {
                     val config: RunnerAndConfigurationSettings = javaAppCfgBuilder
                         .setMainClass()
+                        .setJavaExec()
                         .setProgramArgs()
                         .setModulePaths()
                         .setClassPaths()
@@ -86,8 +82,26 @@ class ImportAction : AnAction() {
                 } catch (exc: NullPointerException) {
                     println(exc.message)
                 }
-            } else if (currVSConfig["request"]?.jsonPrimitive?.content  == "attach") {
+            } else if (currVSConfig["request"]?.jsonPrimitive?.content == "attach") {
+                val nameStr = currVSConfig["name"]?.jsonPrimitive?.content!!
+                if (VariableRepository.getInstance().contains(nameStr))
+                    continue
 
+                val remoteCfgBuilder = JavaRemoteConfigBuilder(nameStr, event, currVSConfig)
+                try {
+                    val config: RunnerAndConfigurationSettings = remoteCfgBuilder
+                        .setHostName()
+                        .setPort()
+                        .build(runManager)
+                    runManager.addConfiguration(config)
+                    println("YEP $nameStr")
+                } catch (exc: ImportException) {
+                    println(exc.message)
+                } catch (exc: RuntimeConfigurationException) {
+                    println(exc.message)
+                } catch (exc: NullPointerException) {
+                    println(exc.message)
+                }
             } else {
                 Messages.showMessageDialog("Undefined configuration request type!", "Error", Messages.getErrorIcon());
             }

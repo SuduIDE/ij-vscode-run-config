@@ -9,7 +9,8 @@ import java.util.regex.Pattern
 
 class VariableRepository private constructor() {
     private val pattern: Pattern = Pattern.compile("\\$\\{(([a-zA-Z]|[0-9])+)}")
-    //    private val unsupported: Pattern = Pattern.compile("\\$\\{(([a-zA-Z]|[0-9])+)}")
+    private val unsupportedPattern: Pattern = Pattern.compile("\\$\\{((input:)|(command:)|(config:))([a-zA-Z]|[0-9]|[^\\w\\s])*}")
+    private val envPattern: Pattern = Pattern.compile("\\$\\{(env:)([a-zA-Z]|[0-9]|[^\\w\\s])*}")
 
     companion object {
         @Volatile
@@ -32,20 +33,32 @@ class VariableRepository private constructor() {
     }
 
     fun substituteAllVariables(str: String): String {
-        val matcher: Matcher = pattern.matcher(str)
+        val unsupportedMatcher = unsupportedPattern.matcher(str)
+        if (unsupportedMatcher.find()) {
+            throw ImportException("String contains unsupported variables: ${unsupportedMatcher.group()}")
+        }
+
         var result: String = str
 
+        val matcher: Matcher = pattern.matcher(str)
         while (matcher.find()) {
-            val oldValue: String = matcher.group(0)
-            val newValue: String = substituteSingleVariable(oldValue)
-            result = str.replace(oldValue, substituteSingleVariable(newValue))
+            val oldValue: String = matcher.group()
+            val newValue: String = substitutePredefinedVariable(oldValue)
+            result = str.replace(oldValue, newValue)
+        }
+
+        val envMatcher = envPattern.matcher(result)
+        while (envMatcher.find()) {
+            val oldValue: String = envMatcher.group()
+            val newValue: String = substituteEnvVariable(oldValue)
+            result = result.replace(oldValue, newValue)
         }
 
         return result
     }
 
-    private fun substituteSingleVariable(variable: String): String {
-        return when (variable) {
+    private fun substitutePredefinedVariable(str: String): String {
+        return when (str) {
             "\${userHome}" -> System.getProperty("user.home")
             "\${workspaceFolder}" -> "\$" + ProjectFileDirMacro().name + "\$"
             "\${workspaceFolderBasename}" -> "\$" + Paths.get(ProjectFileDirMacro().name).fileName.toString() + "\$"
@@ -64,8 +77,13 @@ class VariableRepository private constructor() {
             "\${pathSeparator}" -> File.separatorChar.toString()
             "\${execPath}" -> throw ImportException("Forbidden predefined variable: \${execPath}")
             "\${defaultBuildTask}" -> throw ImportException("Forbidden predefined variable: \${defaultBuildTask}")
-            else -> variable
+            else -> str
         }
+    }
+
+    private fun substituteEnvVariable(str: String): String {
+        val variable: String = str.substring("\${env:".length, str.length - "}".length)
+        return System.getenv(variable) ?: throw ImportException("Cannot find specified environment variable: $variable")
     }
 
     fun expandMacrosInString(str: String, context: DataContext): String {

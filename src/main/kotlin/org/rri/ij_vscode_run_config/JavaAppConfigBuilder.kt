@@ -6,13 +6,14 @@ import com.intellij.execution.ShortenCommandLine
 import com.intellij.execution.application.ApplicationConfiguration
 import com.intellij.execution.application.ApplicationConfigurationType
 import com.intellij.execution.configurations.ConfigurationFactory
+import com.intellij.execution.configurations.ModuleBasedConfigurationOptions
+import com.intellij.execution.configurations.RuntimeConfigurationWarning
 import com.intellij.execution.configurations.runConfigurationType
+import com.intellij.execution.util.JavaParametersUtil
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.PsiManager
@@ -22,10 +23,7 @@ import com.intellij.psi.util.PsiMethodUtil
 import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.DotenvException
 import io.github.cdimascio.dotenv.dotenv
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -43,14 +41,13 @@ class JavaAppConfigBuilder(private val name: String, private val event: AnAction
     ) as ApplicationConfiguration
     private val jvmArgPathSeparator: Char = if (SystemInfo.isWindows) ';' else ':'
 
-    // * "mainClass"
     fun setMainClass(): JavaAppConfigBuilder {
         var mainClassStr = json["mainClass"]?.jsonPrimitive?.content!!
 
         if (VariableRepository.getInstance().contains(mainClassStr)) {
             val expMainClassStr = VariableRepository.getInstance().expandMacrosInString(mainClassStr, event.dataContext)
             if (expMainClassStr.count { c -> c == '/' } == 0) {
-                throw ImportException("Main class name in VSCode config $name contains variables that cannot be resolved as a correct filepath: $expMainClassStr")
+                throw ImportException("Main class name in VSCode config $name contains variables that cannot be resolved as a correct argument: $mainClassStr")
             }
             mainClassStr = expMainClassStr
         }
@@ -69,20 +66,43 @@ class JavaAppConfigBuilder(private val name: String, private val event: AnAction
     }
 
     private fun findMainClassFromPath(path: Path): PsiClass {
-        val files = FilenameIndex.getVirtualFilesByName(path.fileName.toString(), GlobalSearchScope.allScope(event.project!!))
+        val files =
+            FilenameIndex.getVirtualFilesByName(path.fileName.toString(), GlobalSearchScope.allScope(event.project!!))
         val file = if (!files.isEmpty()) {
             files.first()
         } else {
-            LocalFileSystem.getInstance().findFileByIoFile(File(path.absolutePathString())) ?: throw ImportException("Main class name in VSCode config $name contains variables that cannot be resolved as a correct filepath: ${path.absolutePathString()}")
+            LocalFileSystem.getInstance().findFileByIoFile(File(path.absolutePathString()))
+                ?: throw ImportException("Main class name in VSCode config $name contains variables that cannot be resolved as a correct argument: ${path.absolutePathString()}")
         }
 
-        val mainFile = PsiManager.getInstance(event.project!!).findFile(file) as? PsiJavaFile ?: throw ImportException("Specified main class is not found!")
+        val mainFile = PsiManager.getInstance(event.project!!).findFile(file) as? PsiJavaFile
+            ?: throw ImportException("Specified main class is not found!")
         for (cl: PsiClass in mainFile.classes) {
             if (PsiMethodUtil.hasMainMethod(cl)) {
                 return cl
             }
         }
-        throw ImportException("Main class name in VSCode config $name contains variables that cannot be resolved as a correct filepath: ${path.absolutePathString()}")
+        throw ImportException("Main class name in VSCode config $name contains variables that cannot be resolved as a correct argument: ${path.absolutePathString()}")
+    }
+
+    fun setJavaExec(): JavaAppConfigBuilder {
+        val javaExecStr: String? = json["javaExec"]?.jsonPrimitive?.content
+        if (javaExecStr != null) {
+            var javaExecPath: Path =
+                Paths.get(VariableRepository.getInstance().expandMacrosInString(javaExecStr, event.dataContext))
+            while (javaExecPath.nameCount != 0) {
+                try {
+                    JavaParametersUtil.checkAlternativeJRE(javaExecPath.toString())
+                    appCfg.alternativeJrePath = javaExecPath.toString()
+                    appCfg.isAlternativeJrePathEnabled = true
+                    return this
+                } catch (exc: RuntimeConfigurationWarning) {
+                    javaExecPath = javaExecPath.parent
+                }
+            }
+            throw ImportException("Specified JDK/JRE is invalid: $javaExecStr")
+        }
+        return this
     }
 
     // & "args"
@@ -101,39 +121,40 @@ class JavaAppConfigBuilder(private val name: String, private val event: AnAction
     // ! Exclude path
     // ! Advanced Substitution
     fun setModulePaths(): JavaAppConfigBuilder {
-        val stringBuilder: StringBuilder = StringBuilder()
-
-        if (json["modulePaths"] != null) {
-            val modulePaths: String = json["modulePaths"]?.jsonArray!!.stream()
-                .map{ m -> VariableRepository.getInstance().substituteAllVariables(m.jsonPrimitive.content) }
-                .filter{ s -> !s.equals("\$Auto") || !s.equals("\$Runtime") || !s.equals("\$Test") }
-                .filter{ s -> s[0] != '!' }
-                .collect(Collectors.joining(jvmArgPathSeparator.toString()))
-            stringBuilder.append("--module-path $modulePaths")
-        }
-
-        if (appCfg.vmParameters != null) {
-            appCfg.vmParameters += " $stringBuilder"
-        } else {
-            appCfg.vmParameters = stringBuilder.toString()
-        }
-
-//        val mods = appCfg.classpathModifications ?: LinkedList<ModuleBasedConfigurationOptions.ClasspathModification>()
+//        val stringBuilder: StringBuilder = StringBuilder()
 //
 //        if (json["modulePaths"] != null) {
-//            for (module in json["modulePaths"]?.jsonArray!!) {
-//                val modulePath: String = VariableRepository.getInstance().expandMacrosInString(module.jsonPrimitive.content, event.dataContext)
-//                if (modulePath == "\$Auto" || modulePath == "\$Runtime" || modulePath == "\$Test") {
-//                    continue
-//                } else if (modulePath[0] == '!') {
-//                    mods.add(ModuleBasedConfigurationOptions.ClasspathModification(modulePath.substring(1), true))
-//                } else {
-//                    mods.add(ModuleBasedConfigurationOptions.ClasspathModification(modulePath, false))
-//                }
-//            }
+//            val modulePaths: String = json["modulePaths"]?.jsonArray!!.stream()
+//                .map { m -> VariableRepository.getInstance().substituteAllVariables(m.jsonPrimitive.content) }
+//                .filter { s -> !s.equals("\$Auto") && !s.equals("\$Runtime") && !s.equals("\$Test") }
+//                .filter { s -> s[0] != '!' }
+//                .collect(Collectors.joining(jvmArgPathSeparator.toString()))
+//            stringBuilder.append("--module-path $modulePaths")
 //        }
 //
-//        appCfg.classpathModifications = mods
+//        if (appCfg.vmParameters != null) {
+//            appCfg.vmParameters += " $stringBuilder"
+//        } else {
+//            appCfg.vmParameters = stringBuilder.toString()
+//        }
+
+        val modulePaths = LinkedList<ModuleBasedConfigurationOptions.ClasspathModification>()
+
+        if (json["modulePaths"] != null) {
+            for (modulePathStr in json["modulePaths"]?.jsonArray!!) {
+//                val expModuleStr: String = VariableRepository.getInstance().expandMacrosInString(modulePathStr.jsonPrimitive.content, event.dataContext)
+//                if (expModuleStr == "\$Auto" || expModuleStr == "\$Runtime" || expModuleStr == "\$Test") {
+//                    continue
+//                } else if (expModuleStr.startsWith('!')) {
+//                    modulePaths.add(ModuleBasedConfigurationOptions.ClasspathModification(expModuleStr.substring(1), true))
+//                } else {
+//                    modulePaths.add(ModuleBasedConfigurationOptions.ClasspathModification(expModuleStr, false))
+//                }
+                addClassPathModification(modulePaths, modulePathStr, false)
+            }
+        }
+
+        appCfg.classpathModifications.addAll(modulePaths)
 
         return this
     }
@@ -143,43 +164,58 @@ class JavaAppConfigBuilder(private val name: String, private val event: AnAction
     // ! Exclude path
     // ! Advanced Substitution
     fun setClassPaths(): JavaAppConfigBuilder {
-        val stringBuilder: StringBuilder = StringBuilder()
-
-        if (json["classPaths"] != null) {
-            val classPaths : String = json["classPaths"]?.jsonArray!!.stream()
-                .map{ m -> VariableRepository.getInstance().substituteAllVariables(m.jsonPrimitive.content) }
-                .filter{ s -> !s.equals("\$Auto") || !s.equals("\$Runtime") || !s.equals("\$Test") }
-                .filter{ s -> s[0] != '!' }
-                .collect(Collectors.joining(jvmArgPathSeparator.toString()))
-            stringBuilder.append("--class-path \$Classpath\$$jvmArgPathSeparator$classPaths")
-        }
-
-        if (appCfg.vmParameters != null) {
-            appCfg.vmParameters += " $stringBuilder"
-        } else {
-            appCfg.vmParameters = stringBuilder.toString()
-        }
-
-//        val classes =
-//            appCfg.classpathModifications ?: LinkedList<ModuleBasedConfigurationOptions.ClasspathModification>()
+//        val stringBuilder: StringBuilder = StringBuilder()
 //
 //        if (json["classPaths"] != null) {
-//            for (cl in json["classPaths"]?.jsonArray!!) {
-//                val classPath: String =
-//                    VariableRepository.getInstance().expandMacrosInString(cl.jsonPrimitive.content, event.dataContext)
-//                if (classPath == "\$Auto" || classPath == "\$Runtime" || classPath == "\$Test") {
-//                    continue
-//                } else if (classPath[0] == '!') {
-//                    classes.add(ModuleBasedConfigurationOptions.ClasspathModification(classPath.substring(1), true))
-//                } else {
-//                    classes.add(ModuleBasedConfigurationOptions.ClasspathModification(classPath, false))
-//                }
-//            }
+//            val classPaths: String = json["classPaths"]?.jsonArray!!.stream()
+//                .map { m -> VariableRepository.getInstance().substituteAllVariables(m.jsonPrimitive.content) }
+//                .filter { s -> !s.equals("\$Auto") && !s.equals("\$Runtime") && !s.equals("\$Test") }
+//                .filter { s -> s[0] != '!' }
+//                .collect(Collectors.joining(jvmArgPathSeparator.toString()))
+//            stringBuilder.append("--class-path \$Classpath\$$jvmArgPathSeparator$classPaths")
 //        }
 //
-//        appCfg.classpathModifications = classes
+//        if (appCfg.vmParameters != null) {
+//            appCfg.vmParameters += " $stringBuilder"
+//        } else {
+//            appCfg.vmParameters = stringBuilder.toString()
+//        }
+
+        val classPaths = LinkedList<ModuleBasedConfigurationOptions.ClasspathModification>()
+
+        if (json["classPaths"] != null) {
+            for (classPathStr in json["classPaths"]?.jsonArray!!) {
+//                val expClassPathStr: String = VariableRepository.getInstance().expandMacrosInString(classPathStr.jsonPrimitive.content, event.dataContext)
+//                if (expClassPathStr == "\$Auto" || expClassPathStr == "\$Runtime" || expClassPathStr == "\$Test") {
+//                    continue
+//                } else if (expClassPathStr.startsWith('!')) {
+//                    classPaths.add(ModuleBasedConfigurationOptions.ClasspathModification(expClassPathStr.substring(1), true))
+//                } else {
+//                    classPaths.add(ModuleBasedConfigurationOptions.ClasspathModification(expClassPathStr, false))
+//                }
+                addClassPathModification(classPaths, classPathStr, true)
+            }
+        }
+
+        appCfg.classpathModifications.addAll(classPaths)
 
         return this
+    }
+
+    private fun addClassPathModification(
+        list: LinkedList<ModuleBasedConfigurationOptions.ClasspathModification>,
+        path: JsonElement,
+        isClassPath: Boolean
+    ) {
+        val expModuleStr: String =
+            VariableRepository.getInstance().expandMacrosInString(path.jsonPrimitive.content, event.dataContext)
+        if (expModuleStr == "\$Auto" || expModuleStr == "\$Runtime" || expModuleStr == "\$Test") {
+            return
+        } else if (expModuleStr.startsWith('!')) {
+            list.add(ModuleBasedConfigurationOptions.ClasspathModification(expModuleStr.substring(1), true))
+        } else if (!isClassPath) {
+            list.add(ModuleBasedConfigurationOptions.ClasspathModification(expModuleStr, false))
+        }
     }
 
     // & "vmArgs"
@@ -224,7 +260,8 @@ class JavaAppConfigBuilder(private val name: String, private val event: AnAction
         return this
     }
 
-    // * "env"
+    // & "env"
+    // ! Advanced Substitution
     fun setEnv(): JavaAppConfigBuilder {
         val envMap: MutableMap<String, String> = HashMap()
         if (json["env"] != null) {
@@ -258,7 +295,6 @@ class JavaAppConfigBuilder(private val name: String, private val event: AnAction
         return this
     }
 
-    // * "shortenCommandLine"
     fun setShortenCommandLine(): JavaAppConfigBuilder {
         if (json["shortenCommandLine"] != null && json["shortenCommandLine"]?.jsonPrimitive?.content != null) {
             appCfg.shortenCommandLine = when (json["shortenCommandLine"]?.jsonPrimitive?.content) {
