@@ -30,21 +30,6 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew buildPlugin
 
-      - name: Version
-        run: echo "::set-output name=version::$(./gradlew properties -q | grep "version:" | awk '{print $2}')"
-        id: version
-
-      - name: Create Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          artifacts: "build/libs/ij_vscode_run_config*.jar"
-          tag_name: ij_vscode_run_config-${{ matrix.Java }}-${{ matrix.os }}
-          release_name: ${{ steps.version.outputs.version }}
-          prerelease: false
-          draft: false
-
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
