@@ -91,6 +91,9 @@ class ImportAction : AnAction() {
                 }
                 config.storeInDotIdeaFolder()
                 runManager.addConfiguration(config)
+                if (runManager.selectedConfiguration == null) {
+                    runManager.selectedConfiguration = config
+                }
                 println("GOOD $nameStr")
             } catch (exc: ImportException) {
                 println(exc.message)
