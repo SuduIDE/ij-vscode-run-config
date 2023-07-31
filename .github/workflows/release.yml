@@ -27,14 +27,11 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew buildPlugin
 
-      - name: Version
-        run: echo "VERSION=$(./gradlew properties -q | grep "version:" | awk '{print $2}')" >> $GITHUB_ENV
-        id: version
-
       - name: Upload Release
         uses: xresloader/upload-to-github-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           file: "build/libs/ij_vscode_run_config*.jar"
-          tag_name: IJ_VSC_RC-${{ matrix.os }}-Java-${{ matrix.Java }}-${{ env.VERSION }}
+          tag_name: IJ_VSC_RC-${{ matrix.os }}-Java-${{ matrix.Java }}-${{ github.ref_name }}
+          draft: false
