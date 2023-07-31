@@ -40,34 +40,38 @@ class JavaAppConfigBuilder(private val name: String, private val event: AnAction
         factory.createTemplateConfiguration(event.project!!)
     ) as ApplicationConfiguration
     private val jvmArgPathSeparator: Char = if (SystemInfo.isWindows) ';' else ':'
+    private val varRepo: VariableRepository = VariableRepository.getInstance()
 
     fun setMainClass(): JavaAppConfigBuilder {
-        var mainClassStr = json["mainClass"]?.jsonPrimitive?.content!!
+        val mainClassStr = json["mainClass"]?.jsonPrimitive?.content ?: throw ImportException("Main class is not specified")
 
-        if (VariableRepository.getInstance().contains(mainClassStr)) {
-            val expMainClassStr = VariableRepository.getInstance().expandMacrosInString(mainClassStr, event.dataContext)
-            if (expMainClassStr.count { c -> c == '/' } == 0) {
-                throw ImportException("Main class name in VSCode config $name contains variables that cannot be resolved as a correct argument: $mainClassStr")
-            }
-            mainClassStr = expMainClassStr
+        if (varRepo.contains(mainClassStr)) {
+//            val expMainClassStr = varRepo.expandMacrosInString(mainClassStr, event.dataContext)
+//            if (expMainClassStr.count { c -> c == '/' } == 0) {
+//                throw ImportException("Main class name in VSCode config $name contains variables that cannot be resolved as a correct argument: $mainClassStr")
+//            }
+//            mainClassStr = expMainClassStr
+            throw ImportException("VSCode config \"mainClass\" property contains variables: $mainClassStr")
         }
 
         val mainClassPath = Paths.get(mainClassStr)
         val mainClass = if (mainClassPath.isAbsolute) {
             findMainClassFromPath(mainClassPath)
         } else if (mainClassStr.count { c -> c == '/' } == 1 && !mainClassStr.startsWith("/")) {
-            appCfg.configurationModule.findClass(mainClassStr.substringAfter('/'))!!
+            appCfg.configurationModule.findClass(mainClassStr.substringAfter('/'))
         } else {
-            appCfg.configurationModule.findClass(mainClassStr)!!
-        }
+            appCfg.configurationModule.findClass(mainClassStr)
+        } ?: throw ImportException("Cannot find specified main class: $mainClassStr")
 
         appCfg.setMainClass(mainClass)
         return this
     }
 
     private fun findMainClassFromPath(path: Path): PsiClass {
-        val files =
-            FilenameIndex.getVirtualFilesByName(path.fileName.toString(), GlobalSearchScope.allScope(event.project!!))
+        val files = FilenameIndex.getVirtualFilesByName(
+            path.fileName.toString(),
+            GlobalSearchScope.allScope(event.project!!)
+        )
         val file = if (!files.isEmpty()) {
             files.first()
         } else {
@@ -89,7 +93,7 @@ class JavaAppConfigBuilder(private val name: String, private val event: AnAction
         val javaExecStr: String? = json["javaExec"]?.jsonPrimitive?.content
         if (javaExecStr != null) {
             var javaExecPath: Path =
-                Paths.get(VariableRepository.getInstance().expandMacrosInString(javaExecStr, event.dataContext))
+                Paths.get(varRepo.expandMacrosInString(javaExecStr, event.dataContext))
             while (javaExecPath.nameCount != 0) {
                 try {
                     JavaParametersUtil.checkAlternativeJRE(javaExecPath.toString())
@@ -108,11 +112,25 @@ class JavaAppConfigBuilder(private val name: String, private val event: AnAction
     // & "args"
     // ! Advanced Substitution
     fun setProgramArgs(): JavaAppConfigBuilder {
-        if (json["args"] != null) {
-            appCfg.programParameters = json["args"]?.jsonArray!!.stream().map { m ->
-                VariableRepository.getInstance().substituteAllVariables(m.jsonPrimitive.content)
+//        if (json["args"] != null) {
+//            appCfg.programParameters = json["args"]!!.jsonArray.stream().map { m ->
+//                varRepo.substituteAllVariables(m.jsonPrimitive.content)
+//            }.collect(Collectors.joining(" "))
+//        }
+
+        if (json["args"] != null && try {
+                json["args"]?.jsonPrimitive != null
+            } catch (exc: IllegalArgumentException) {
+                false
+            }
+        ) {
+            appCfg.programParameters = varRepo.substituteAllVariables(json["args"]!!.jsonPrimitive.content)
+        } else if (json["args"]?.jsonArray != null) {
+            appCfg.programParameters = json["args"]!!.jsonArray.stream().map { m ->
+                varRepo.substituteAllVariables(m.jsonPrimitive.content)
             }.collect(Collectors.joining(" "))
         }
+
         return this
     }
 
@@ -124,7 +142,7 @@ class JavaAppConfigBuilder(private val name: String, private val event: AnAction
 //        val stringBuilder: StringBuilder = StringBuilder()
 //
 //        if (json["modulePaths"] != null) {
-//            val modulePaths: String = json["modulePaths"]?.jsonArray!!.stream()
+//            val modulePaths: String = json["modulePaths"]!!.jsonArray.stream()
 //                .map { m -> VariableRepository.getInstance().substituteAllVariables(m.jsonPrimitive.content) }
 //                .filter { s -> !s.equals("\$Auto") && !s.equals("\$Runtime") && !s.equals("\$Test") }
 //                .filter { s -> s[0] != '!' }
@@ -141,7 +159,7 @@ class JavaAppConfigBuilder(private val name: String, private val event: AnAction
         val modulePaths = LinkedList<ModuleBasedConfigurationOptions.ClasspathModification>()
 
         if (json["modulePaths"] != null) {
-            for (modulePathStr in json["modulePaths"]?.jsonArray!!) {
+            for (modulePathStr in json["modulePaths"]!!.jsonArray) {
 //                val expModuleStr: String = VariableRepository.getInstance().expandMacrosInString(modulePathStr.jsonPrimitive.content, event.dataContext)
 //                if (expModuleStr == "\$Auto" || expModuleStr == "\$Runtime" || expModuleStr == "\$Test") {
 //                    continue
@@ -167,7 +185,7 @@ class JavaAppConfigBuilder(private val name: String, private val event: AnAction
 //        val stringBuilder: StringBuilder = StringBuilder()
 //
 //        if (json["classPaths"] != null) {
-//            val classPaths: String = json["classPaths"]?.jsonArray!!.stream()
+//            val classPaths: String = json["classPaths"]!!.jsonArray.stream()
 //                .map { m -> VariableRepository.getInstance().substituteAllVariables(m.jsonPrimitive.content) }
 //                .filter { s -> !s.equals("\$Auto") && !s.equals("\$Runtime") && !s.equals("\$Test") }
 //                .filter { s -> s[0] != '!' }
@@ -184,7 +202,7 @@ class JavaAppConfigBuilder(private val name: String, private val event: AnAction
         val classPaths = LinkedList<ModuleBasedConfigurationOptions.ClasspathModification>()
 
         if (json["classPaths"] != null) {
-            for (classPathStr in json["classPaths"]?.jsonArray!!) {
+            for (classPathStr in json["classPaths"]!!.jsonArray) {
 //                val expClassPathStr: String = VariableRepository.getInstance().expandMacrosInString(classPathStr.jsonPrimitive.content, event.dataContext)
 //                if (expClassPathStr == "\$Auto" || expClassPathStr == "\$Runtime" || expClassPathStr == "\$Test") {
 //                    continue
@@ -207,8 +225,7 @@ class JavaAppConfigBuilder(private val name: String, private val event: AnAction
         path: JsonElement,
         isClassPath: Boolean
     ) {
-        val expModuleStr: String =
-            VariableRepository.getInstance().expandMacrosInString(path.jsonPrimitive.content, event.dataContext)
+        val expModuleStr: String = varRepo.expandMacrosInString(path.jsonPrimitive.content, event.dataContext)
         if (expModuleStr == "\$Auto" || expModuleStr == "\$Runtime" || expModuleStr == "\$Test") {
             return
         } else if (expModuleStr.startsWith('!')) {
@@ -229,12 +246,11 @@ class JavaAppConfigBuilder(private val name: String, private val event: AnAction
                 false
             }
         ) {
-            val vmArgsStr: String =
-                VariableRepository.getInstance().substituteAllVariables(json["vmArgs"]!!.jsonPrimitive.content)
+            val vmArgsStr: String = varRepo.substituteAllVariables(json["vmArgs"]!!.jsonPrimitive.content)
             vmArgsBuilder.append(" $vmArgsStr ")
         } else if (json["vmArgs"]?.jsonArray != null) {
-            val vmArgs: String = json["vmArgs"]?.jsonArray!!.stream().map { m ->
-                VariableRepository.getInstance().substituteAllVariables(m.jsonPrimitive.content)
+            val vmArgs: String = json["vmArgs"]!!.jsonArray.stream().map { m ->
+                varRepo.substituteAllVariables(m.jsonPrimitive.content)
             }.collect(Collectors.joining(" "))
             vmArgsBuilder.append(vmArgs)
         }
@@ -252,8 +268,7 @@ class JavaAppConfigBuilder(private val name: String, private val event: AnAction
     // ! Advanced Substitution
     fun setWorkingDirectory(): JavaAppConfigBuilder {
         if (json["cwd"]?.jsonPrimitive?.content != null) {
-            appCfg.workingDirectory =
-                VariableRepository.getInstance().substituteAllVariables(json["cwd"]!!.jsonPrimitive.content)
+            appCfg.workingDirectory = varRepo.substituteAllVariables(json["cwd"]!!.jsonPrimitive.content)
         } else {
             appCfg.workingDirectory = event.project!!.guessProjectDir()?.path
         }
@@ -266,26 +281,23 @@ class JavaAppConfigBuilder(private val name: String, private val event: AnAction
         val envMap: MutableMap<String, String> = HashMap()
         if (json["env"] != null) {
             for (entry in json["env"]?.jsonObject?.entries!!) {
-                envMap[entry.key] =
-                    VariableRepository.getInstance().substituteAllVariables(entry.value.jsonPrimitive.content)
+                envMap[entry.key] = varRepo.substituteAllVariables(entry.value.jsonPrimitive.content)
             }
         }
 
         if (json["envFile"] != null && json["envFile"]?.jsonPrimitive?.content != null) {
-            val envPath: Path = Paths.get(json["envFile"]?.jsonPrimitive?.content!!)
+            val envPath: Path = Paths.get(json["envFile"]!!.jsonPrimitive.content)
             try {
                 val dotenv: Dotenv = dotenv {
-                    directory = VariableRepository.getInstance()
-                        .expandMacrosInString(envPath.parent.toString(), event.dataContext)
-                    filename = VariableRepository.getInstance()
-                        .expandMacrosInString(envPath.fileName.toString(), event.dataContext)
+                    directory = varRepo.expandMacrosInString(envPath.parent.toString(), event.dataContext)
+                    filename = varRepo.expandMacrosInString(envPath.fileName.toString(), event.dataContext)
 //                            systemProperties = false
                 }
                 for (dotenvEntry in dotenv.entries()) {
                     envMap[dotenvEntry.key] = dotenvEntry.value
                 }
             } catch (exc: DotenvException) {
-                println(exc)
+                throw ImportException("Env file is invalid", exc)
             }
         }
 
