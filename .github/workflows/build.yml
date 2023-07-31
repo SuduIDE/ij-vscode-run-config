@@ -1,7 +1,6 @@
 name: Build
 
 on:
-  workflow_call:
   pull_request:
     branches:
       - '*'
@@ -30,9 +29,6 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew buildPlugin
-
-      - name: Set current date as env variable
-        run: echo "TIMESTAMP=$(date +'%Y-%m-%d-T%H-%M-%S')" >> $GITHUB_ENV
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
