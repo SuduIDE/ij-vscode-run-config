@@ -30,8 +30,11 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew buildPlugin
 
+      - name: Set current date as env variable
+        run: echo "TIMESTAMP=$(date +'%Y-%m-%d-T%H:%M:%S')" >> $GITHUB_ENV
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ij_vscode_run_config-${{ github.run_number }}
+          name: ij_vscode_run_config-${{TIMESTAMP}}
           path: "./build/distributions/*.zip"
