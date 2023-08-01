@@ -75,8 +75,7 @@ class VariableRepository private constructor() {
             "\${lineNumber}" -> "\$" + LineNumberMacro().name + "\$"
             "\${selectedText}" -> "\$" + SelectedTextMacro().name + "\$"
             "\${pathSeparator}" -> File.separatorChar.toString()
-            "\${execPath}" -> throw ImportException("Forbidden predefined variable: \${execPath}")
-            "\${defaultBuildTask}" -> throw ImportException("Forbidden predefined variable: \${defaultBuildTask}")
+            "\${execPath}", "\${defaultBuildTask}" -> throw ImportException("Forbidden predefined variable: $str")
             else -> str
         }
     }
