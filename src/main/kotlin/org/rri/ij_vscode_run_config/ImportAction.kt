@@ -13,8 +13,6 @@ import kotlinx.serialization.json.*
 
 class ImportAction : AnAction() {
 
-    // ! НИКАКОГО СОСТОЯНИЯ
-
     override fun update(event: AnActionEvent) {
         event.presentation.isEnabledAndVisible = event.project != null
     }
@@ -33,8 +31,7 @@ class ImportAction : AnAction() {
 
         val runManager: RunManager = RunManager.getInstance(event.project!!)
         var config: RunnerAndConfigurationSettings
-        for (currCfg: JsonElement in launchJson.jsonObject["configurations"]!!.jsonArray) {
-            val cfgJson: JsonObject = currCfg.jsonObject
+        for (cfgJson: JsonObject in launchJson.jsonObject["configurations"]!!.jsonArray.map { j -> j.jsonObject }) {
             if (cfgJson["type"]?.jsonPrimitive?.content != "java")
                 continue
 
