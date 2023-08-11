@@ -63,9 +63,11 @@ class JavaSettingsJsonTest : BaseImportTestCase() {
 
         val settingsFile: VirtualFile = createChildData(myVSCodeFolder, "settings.json")
         setFileText(settingsFile, settingsFileContent)
+        assertSameFileWithText(settingsFileContent, settingsFile.toNioPath())
     }
 
     fun testJavaSettingsJsonConfig() {
+
         setFileText(myLaunchFile, launchFileContent)
 
         val importConfigManager = ImportConfigManager(project, myContext)
