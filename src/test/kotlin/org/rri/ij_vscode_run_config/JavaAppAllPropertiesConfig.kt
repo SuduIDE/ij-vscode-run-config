@@ -27,7 +27,7 @@ class JavaAppAllPropertiesConfig: BaseImportTestCase() {
                         "TEST_VAR_FOO": "foo",
                         "TEST_VAR_BAR": "bar"
                     },
-                    "envFile": "${'$'}{fileWorkspaceFolder}/.env",
+                    "envFile": "${'$'}{workspaceFolder}/.env",
                     "cwd": "${'$'}{workspaceFolder}",
 
                     "mainClass": "example.Main",

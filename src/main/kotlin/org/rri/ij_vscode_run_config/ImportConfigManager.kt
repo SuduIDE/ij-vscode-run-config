@@ -35,6 +35,7 @@ class ImportConfigManager(private val project: Project, private val context: Dat
                 continue
 
             try {
+                println("BEFORE CREATION: $cfgName")
                 val config = createJavaConfiguration(cfgName, cfgJson, settingsJson)
 
                 config.storeInDotIdeaFolder()
@@ -44,6 +45,7 @@ class ImportConfigManager(private val project: Project, private val context: Dat
                     runManager.selectedConfiguration = config
                 }
 
+                println("AFTER CREATION: $cfgName")
                 println("GOOD: $cfgName")
             } catch (exc: ImportError) {
                 println(exc.message)

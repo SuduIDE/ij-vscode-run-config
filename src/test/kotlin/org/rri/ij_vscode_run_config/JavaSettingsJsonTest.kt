@@ -67,15 +67,6 @@ class JavaSettingsJsonTest : BaseImportTestCase() {
         }
         """.trimIndent()
 
-        try {
-            val builder = JavaAppConfigBuilder("Test", project)
-                .setMainClass(JsonPrimitive("example.Main"))
-                .setJavaExec(JsonPrimitive(SystemProperties.getJavaHome()), myContext)
-                .build(RunManager.getInstance(project))
-        } catch (exc: Throwable) {
-            println("OOPS")
-        }
-
         val settingsFile: VirtualFile = createChildData(myVSCodeFolder, "settings.json")
         setFileText(settingsFile, settingsFileContent)
         assertSameFileWithText(settingsFileContent, settingsFile.toNioPath())
