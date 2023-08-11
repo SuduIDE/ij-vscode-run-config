@@ -105,8 +105,12 @@ class JavaAppConfigBuilder(name: String, project: Project): ConfigBuilderBase(na
         if (javaExecStr == null)
             return this
 
-        if (!trySetJavaExecStr(javaExecStr, context))
+        if (!trySetJavaExecStr(javaExecStr, context)) {
+            println("BAD: $javaExecStr")
             throw ImportError("Specified JDK/JRE path is invalid: $javaExecStr")
+        }
+
+        println("GOOD: $javaExecStr")
 
         return this
     }
