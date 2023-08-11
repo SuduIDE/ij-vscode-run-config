@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.HeavyTestHelper
 import com.intellij.testFramework.JavaProjectTestCase
+import com.intellij.testFramework.PlatformTestUtil
 import kotlinx.coroutines.runBlocking
 import org.intellij.lang.annotations.Language
 import org.jetbrains.concurrency.await
@@ -76,10 +77,14 @@ abstract class BaseImportTestCase : JavaProjectTestCase() {
             saveSettings(project)
         }
 
-        val vFile: VirtualFile = LocalFileSystem.getInstance().findFileByIoFile(filePath.toFile())!!
-        val actual: String =
-            PathMacroManager.getInstance(project).expandPath(String(vFile.contentsToByteArray(), vFile.charset))
-        println(actual)
+        println("FILEPATH: $filePath")
+
+//        val vFile: VirtualFile = LocalFileSystem.getInstance().findFileByIoFile(filePath.toFile())!!
+//        val actual: String =
+//            PathMacroManager.getInstance(project).expandPath(String(vFile.contentsToByteArray(), vFile.charset))
+        val actual: String = PlatformTestUtil.loadFileText(filePath.toString())
+        println("ACTUAL: $actual")
+        println("EXPECTED: $expected")
         assertEquals(expected, actual)
     }
 

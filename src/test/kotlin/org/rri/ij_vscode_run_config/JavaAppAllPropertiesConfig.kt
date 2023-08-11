@@ -1,6 +1,7 @@
 package org.rri.ij_vscode_run_config
 
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.util.SystemProperties
 import org.intellij.lang.annotations.Language
 import java.io.File
@@ -32,7 +33,7 @@ class JavaAppAllPropertiesConfig: BaseImportTestCase() {
                     "encoding": "UTF-8",
                     "vmArgs": ["-Xms100m", "-Xmx1000m"],
                     "shortenCommandLine": "jarmanifest",
-                    "javaExec": "${SystemProperties.getJavaHome()}",
+                    "javaExec": "${PlatformTestUtil.getJavaExe()}",
 
                     "preLaunchTask": {
                         "task": "Task name",

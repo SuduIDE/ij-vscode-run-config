@@ -2,6 +2,7 @@ package org.rri.ij_vscode_run_config
 
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.IdeaTestUtil
+import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.util.SystemProperties
 import org.intellij.lang.annotations.Language
 import java.io.File
@@ -45,6 +46,8 @@ class JavaSettingsJsonTest : BaseImportTestCase() {
         println("JAVAHOME2: " + SystemProperties.getJavaHome().replace('/', File.separatorChar))
 
         setFileText(myLaunchFile, launchFileContent)
+
+        PlatformTestUtil.getJavaExe()
 
         @Language("JSON")
         val settingsFileContent: String = """
