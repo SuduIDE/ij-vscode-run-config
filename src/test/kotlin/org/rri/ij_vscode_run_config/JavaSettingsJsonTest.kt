@@ -9,10 +9,8 @@ import org.intellij.lang.annotations.Language
 
 class JavaSettingsJsonTest : BaseImportTestCase() {
 
-    private val javaExec =
-        if (SystemInfo.isWindows) PlatformTestUtil.getJavaExe().replace("\\", "\\\\") else PlatformTestUtil.getJavaExe()
-    private val javaHome = if (SystemInfo.isWindows) SystemProperties.getJavaHome()
-        .replace("\\", "\\\\") else SystemProperties.getJavaHome()
+    private val javaExec = if (SystemInfo.isWindows) PlatformTestUtil.getJavaExe().replace("\\", "\\\\") else PlatformTestUtil.getJavaExe()
+    private val javaHome = if (SystemInfo.isWindows) SystemProperties.getJavaHome().replace("\\", "\\\\") else SystemProperties.getJavaHome()
 
 
     @Language("JSON")
@@ -24,7 +22,6 @@ class JavaSettingsJsonTest : BaseImportTestCase() {
                     "type": "java",
                     "name": "Settings",
                     "request": "launch",
-                    
                     "mainClass": "example.Main"
                 }
             ]

@@ -26,35 +26,33 @@ class ImportConfigManager(private val project: Project, private val context: Dat
             ?: return
         val settingsJson: JsonObject? = getJsonFromFileInFolder(vscodeFolder, "settings.json")?.jsonObject
 
-        if (settingsJson == null)
+        for (cfgJson: JsonObject in launchJson) {
+            if (cfgJson["type"]?.jsonPrimitive?.content != "java")
+                continue
 
-            for (cfgJson: JsonObject in launchJson) {
-                if (cfgJson["type"]?.jsonPrimitive?.content != "java")
-                    continue
+            val cfgName: String? = cfgJson["name"]?.jsonPrimitive?.content
+            if (cfgName == null || VariableRepository.contains(cfgName))
+                continue
 
-                val cfgName: String? = cfgJson["name"]?.jsonPrimitive?.content
-                if (cfgName == null || VariableRepository.contains(cfgName))
-                    continue
+            try {
+                val config = createJavaConfiguration(cfgName, cfgJson, settingsJson)
 
-                try {
-                    val config = createJavaConfiguration(cfgName, cfgJson, settingsJson)
+                config.storeInDotIdeaFolder()
+                runManager.addConfiguration(config)
 
-                    config.storeInDotIdeaFolder()
-                    runManager.addConfiguration(config)
-
-                    if (runManager.selectedConfiguration == null) {
-                        runManager.selectedConfiguration = config
-                    }
-                } catch (exc: ImportError) {
-                    println(exc.message)
-                } catch (exc: ImportWarning) {
-                    println(exc.message)
-                } catch (exc: RuntimeConfigurationException) {
-                    println(exc.message)
-                } catch (exc: NullPointerException) {
-                    println(exc.message)
+                if (runManager.selectedConfiguration == null) {
+                    runManager.selectedConfiguration = config
                 }
+            } catch (exc: ImportError) {
+                println(exc.message)
+            } catch (exc: ImportWarning) {
+                println(exc.message)
+            } catch (exc: RuntimeConfigurationException) {
+                println(exc.message)
+            } catch (exc: NullPointerException) {
+                println(exc.message)
             }
+        }
     }
 
     private fun createJavaConfiguration(
