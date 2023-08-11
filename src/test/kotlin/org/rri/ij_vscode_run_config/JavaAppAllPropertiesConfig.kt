@@ -27,7 +27,7 @@ class JavaAppAllPropertiesConfig: BaseImportTestCase() {
                         "TEST_VAR_FOO": "foo",
                         "TEST_VAR_BAR": "bar"
                     },
-                    "envFile": "${'$'}{workspaceFolder}/.env",
+                    "envFile": "${'$'}{workspaceFolder}/data.env",
                     "cwd": "${'$'}{workspaceFolder}",
 
                     "mainClass": "example.Main",
@@ -86,11 +86,13 @@ class JavaAppAllPropertiesConfig: BaseImportTestCase() {
     fun testJavaAppAllPropertiesConfig() {
         setFileText(myLaunchFile, launchFileContent)
 
-        val envFile: VirtualFile = createChildData(myRoot, ".env")
+        val envFile: VirtualFile = createChildData(myRoot, "data.env")
         setFileText(envFile, envFileContent)
 
         val importConfigManager = ImportConfigManager(project, myContext)
+        println("BEFORE ALL PROPERTIES PROCESS")
         importConfigManager.process()
+        println("AFTER ALL PROPERTIES PROCESS")
 
         assertSameFileWithText(xmlOutput, getOutPath().resolve("All_properties.xml"))
     }

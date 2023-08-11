@@ -26,6 +26,9 @@ class ImportConfigManager(private val project: Project, private val context: Dat
             ?: return
         val settingsJson: JsonObject? = getJsonFromFileInFolder(vscodeFolder, "settings.json")?.jsonObject
 
+        if (settingsJson == null)
+            println("NO SETTINGS")
+
         for (cfgJson: JsonObject in launchJson) {
             if (cfgJson["type"]?.jsonPrimitive?.content != "java")
                 continue
