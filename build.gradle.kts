@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "org.rri"
-version = "0.0.1"
+version = "0.1.0"
 
 dependencies {
   implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")

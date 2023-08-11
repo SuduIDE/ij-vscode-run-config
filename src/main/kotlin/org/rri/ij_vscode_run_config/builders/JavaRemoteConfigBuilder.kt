@@ -1,29 +1,26 @@
-package org.rri.ij_vscode_run_config
+package org.rri.ij_vscode_run_config.builders
 
-import com.intellij.execution.RunManager
-import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.runConfigurationType
 import com.intellij.execution.remote.RemoteConfiguration
 import com.intellij.execution.remote.RemoteConfigurationType
-import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.project.Project
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonPrimitive
 
-class JavaRemoteConfigBuilder(private val name: String, private val event: AnActionEvent) {
+class JavaRemoteConfigBuilder(name: String, project: Project) : ConfigBuilderBase(name, project) {
 
-    private val factory: ConfigurationFactory =
+    override val factory: ConfigurationFactory =
         runConfigurationType<RemoteConfigurationType>().configurationFactories[0]
-    private val remoteCfg: RemoteConfiguration = factory.createConfiguration(
+    override val config: RemoteConfiguration = factory.createConfiguration(
         name,
-        factory.createTemplateConfiguration(event.project!!)
+        factory.createTemplateConfiguration(project)
     ) as RemoteConfiguration
-
 
     fun setHostName(value: JsonElement?): JavaRemoteConfigBuilder {
         val hostName: String? = value?.jsonPrimitive?.content
         if (hostName != null) {
-            remoteCfg.HOST = hostName
+            config.HOST = hostName
         }
         return this
     }
@@ -31,14 +28,9 @@ class JavaRemoteConfigBuilder(private val name: String, private val event: AnAct
     fun setPort(value: JsonElement?): JavaRemoteConfigBuilder {
         val port: String? = value?.jsonPrimitive?.content
         if (port != null) {
-            remoteCfg.PORT = port
+            config.PORT = port
         }
         return this
-    }
-
-    fun build(runManager: RunManager): RunnerAndConfigurationSettings {
-        remoteCfg.checkConfiguration()
-        return runManager.createConfiguration(remoteCfg, factory)
     }
 
 }
