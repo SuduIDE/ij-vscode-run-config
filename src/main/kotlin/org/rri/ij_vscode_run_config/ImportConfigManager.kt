@@ -44,14 +44,15 @@ class ImportConfigManager(private val project: Project, private val context: Dat
                     runManager.selectedConfiguration = config
                 }
 
-//            } catch (exc: ImportError) {
-//                println(exc.message)
+                println("GOOD: $cfgName")
+            } catch (exc: ImportError) {
+                println(exc.message)
             } catch (exc: ImportWarning){
                 println(exc.message)
-//            } catch (exc: RuntimeConfigurationException) {
-//                println(exc.message)
-//            } catch (exc: NullPointerException) {
-//                println(exc.message)
+            } catch (exc: RuntimeConfigurationException) {
+                println(exc.message)
+            } catch (exc: NullPointerException) {
+                println(exc.message)
             }
         }
     }

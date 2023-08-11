@@ -92,15 +92,6 @@ class JavaAppAllPropertiesConfig: BaseImportTestCase() {
         val importConfigManager = ImportConfigManager(project, myContext)
         importConfigManager.process()
 
-        try {
-            val builder = JavaAppConfigBuilder("Test", project)
-                .setMainClass(JsonPrimitive("example.Main"))
-                .setJavaExec(JsonPrimitive(SystemProperties.getJavaHome()), myContext)
-                .build(RunManager.getInstance(project))
-        } catch (exc: Throwable) {
-            println("OOPS")
-        }
-
         assertSameFileWithText(xmlOutput, getOutPath().resolve("All_properties.xml"))
     }
 
