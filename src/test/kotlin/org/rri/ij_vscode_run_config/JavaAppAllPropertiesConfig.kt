@@ -1,7 +1,7 @@
 package org.rri.ij_vscode_run_config
 
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.testFramework.IdeaTestUtil
+import com.intellij.util.SystemProperties
 import org.intellij.lang.annotations.Language
 
 class JavaAppAllPropertiesConfig: BaseImportTestCase() {
@@ -30,7 +30,7 @@ class JavaAppAllPropertiesConfig: BaseImportTestCase() {
                     "encoding": "UTF-8",
                     "vmArgs": ["-Xms100m", "-Xmx1000m"],
                     "shortenCommandLine": "jarmanifest",
-                    "javaExec": "${IdeaTestUtil.requireRealJdkHome()}",
+                    "javaExec": "${SystemProperties.getJavaHome()}",
 
                     "preLaunchTask": {
                         "task": "Task name",
@@ -45,7 +45,7 @@ class JavaAppAllPropertiesConfig: BaseImportTestCase() {
     private val xmlOutput: String = """
         <component name="ProjectRunConfigurationManager">
           <configuration name="All properties" type="Application" factoryName="Application">
-            <option name="ALTERNATIVE_JRE_PATH" value="${IdeaTestUtil.requireRealJdkHome()}" />
+            <option name="ALTERNATIVE_JRE_PATH" value="${SystemProperties.getJavaHome()}" />
             <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
             <classpathModifications>
               <entry exclude="true" path="/exclude/module/path/boo1" />
@@ -78,8 +78,6 @@ class JavaAppAllPropertiesConfig: BaseImportTestCase() {
     """.trimIndent()
 
     fun testJavaAppAllPropertiesConfig() {
-        println("JAVAHOME: " + IdeaTestUtil.requireRealJdkHome())
-
         setFileText(myLaunchFile, launchFileContent)
 
         val envFile: VirtualFile = createChildData(myRoot, ".env")
