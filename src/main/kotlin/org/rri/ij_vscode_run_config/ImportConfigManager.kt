@@ -18,10 +18,12 @@ class ImportConfigManager(private val project: Project, private val context: Dat
     private val runManager = RunManager.getInstance(project)
 
     fun process() {
+        println("TUT1")
         val vscodeFolder: VirtualFile = project.guessProjectDir()?.findChild(".vscode")
             ?: return
 
         val launchElement: JsonElement? = getJsonFromFileInFolder(vscodeFolder, "launch.json")
+        println("TUT2")
         val launchJson = launchElement?.jsonObject?.get("configurations")?.jsonArray?.map { j -> j.jsonObject }
             ?: return
         val settingsJson: JsonObject? = getJsonFromFileInFolder(vscodeFolder, "settings.json")?.jsonObject
@@ -29,6 +31,7 @@ class ImportConfigManager(private val project: Project, private val context: Dat
         if (settingsJson == null)
             println("NO SETTINGS")
 
+        println("TUT3")
         for (cfgJson: JsonObject in launchJson) {
             if (cfgJson["type"]?.jsonPrimitive?.content != "java")
                 continue
@@ -105,15 +108,19 @@ class ImportConfigManager(private val project: Project, private val context: Dat
     }
 
     private fun getJsonFromFileInFolder(folder: VirtualFile, filename: String): JsonElement? {
+        println("JSON TUT1")
         val file: VirtualFile? =
             LocalFileSystem.getInstance().findFileByIoFile(folder.toNioPath().resolve(filename).toFile())
 
+        println("JSON TUT2")
         if (file == null || !file.isValid)
             return null
 
+        println("JSON TUT3")
         val content = String(file.contentsToByteArray(), file.charset)
         val json: JsonElement? = Json.runCatching { parseToJsonElement(content) }.getOrNull()
 
+        println("JSON TUT4")
         return json?.jsonObject
     }
 }
