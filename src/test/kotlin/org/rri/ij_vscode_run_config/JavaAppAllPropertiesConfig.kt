@@ -1,16 +1,15 @@
 package org.rri.ij_vscode_run_config
 
-import com.intellij.execution.RunManager
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.util.SystemProperties
-import kotlinx.serialization.json.JsonPrimitive
 import org.intellij.lang.annotations.Language
-import org.rri.ij_vscode_run_config.builders.JavaAppConfigBuilder
-import java.io.File
-import java.nio.file.Paths
 
 class JavaAppAllPropertiesConfig: BaseImportTestCase() {
+
+    private val javaExec = if (SystemInfo.isWindows) PlatformTestUtil.getJavaExe().replace("\\", "\\\\") else PlatformTestUtil.getJavaExe()
+    private val javaHome = if (SystemInfo.isWindows) SystemProperties.getJavaHome().replace("\\", "\\\\") else SystemProperties.getJavaHome()
 
     @Language("JSON")
     private val launchFileContent: String = """
@@ -36,6 +35,7 @@ class JavaAppAllPropertiesConfig: BaseImportTestCase() {
                     "encoding": "UTF-8",
                     "vmArgs": ["-Xms100m", "-Xmx1000m"],
                     "shortenCommandLine": "jarmanifest",
+                    "javaExec": "$javaExec",
 
                     "preLaunchTask": {
                         "task": "Task name",
@@ -50,7 +50,7 @@ class JavaAppAllPropertiesConfig: BaseImportTestCase() {
     private val xmlOutput: String = """
         <component name="ProjectRunConfigurationManager">
           <configuration name="All properties" type="Application" factoryName="Application">
-            <option name="ALTERNATIVE_JRE_PATH" value="${SystemProperties.getJavaHome()}" />
+            <option name="ALTERNATIVE_JRE_PATH" value="$javaHome" />
             <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
             <classpathModifications>
               <entry exclude="true" path="/exclude/module/path/boo1" />
