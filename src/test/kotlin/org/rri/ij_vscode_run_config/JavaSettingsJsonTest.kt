@@ -39,8 +39,9 @@ class JavaSettingsJsonTest : BaseImportTestCase() {
         </component>
         """.trimIndent()
 
-    override fun setUp() {
-        super.setUp()
+    fun testJavaSettingsJsonConfig() {
+
+        setFileText(myLaunchFile, launchFileContent)
 
         @Language("JSON")
         val settingsFileContent: String = """
@@ -64,11 +65,6 @@ class JavaSettingsJsonTest : BaseImportTestCase() {
         val settingsFile: VirtualFile = createChildData(myVSCodeFolder, "settings.json")
         setFileText(settingsFile, settingsFileContent)
         assertSameFileWithText(settingsFileContent, settingsFile.toNioPath())
-    }
-
-    fun testJavaSettingsJsonConfig() {
-
-        setFileText(myLaunchFile, launchFileContent)
 
         val importConfigManager = ImportConfigManager(project, myContext)
         importConfigManager.process()
