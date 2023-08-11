@@ -54,11 +54,6 @@ class JavaSettingsJsonTest : BaseImportTestCase() {
             "java.debug.settings.vmArgs": "-DSettings=JSON",
             "java.configuration.runtimes": [ 
                 {
-                    "name": "JavaSE-9",
-                    "path": "${SystemProperties.getJavaHome()}",
-                    "default": true
-                },
-                {
                     "name": "JavaSE-11",
                     "path": "${IdeaTestUtil.getMockJdk11().homePath}",
                     "default": false

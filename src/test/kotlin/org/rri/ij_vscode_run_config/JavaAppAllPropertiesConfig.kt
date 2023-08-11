@@ -36,7 +36,6 @@ class JavaAppAllPropertiesConfig: BaseImportTestCase() {
                     "encoding": "UTF-8",
                     "vmArgs": ["-Xms100m", "-Xmx1000m"],
                     "shortenCommandLine": "jarmanifest",
-                    "javaExec": "${PlatformTestUtil.getJavaExe()}",
 
                     "preLaunchTask": {
                         "task": "Task name",
