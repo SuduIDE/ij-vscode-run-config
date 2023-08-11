@@ -3,6 +3,8 @@ package org.rri.ij_vscode_run_config
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.SystemProperties
 import org.intellij.lang.annotations.Language
+import java.io.File
+import java.nio.file.Paths
 
 class JavaAppAllPropertiesConfig: BaseImportTestCase() {
 
@@ -78,6 +80,9 @@ class JavaAppAllPropertiesConfig: BaseImportTestCase() {
     """.trimIndent()
 
     fun testJavaAppAllPropertiesConfig() {
+        println("JAVAHOME1: " + SystemProperties.getJavaHome())
+        println("JAVAHOME2: " + SystemProperties.getJavaHome().replace('/', File.separatorChar))
+
         setFileText(myLaunchFile, launchFileContent)
 
         val envFile: VirtualFile = createChildData(myRoot, ".env")

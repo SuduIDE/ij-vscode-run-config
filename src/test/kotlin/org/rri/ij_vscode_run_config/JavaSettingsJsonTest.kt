@@ -4,6 +4,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.IdeaTestUtil
 import com.intellij.util.SystemProperties
 import org.intellij.lang.annotations.Language
+import java.io.File
 
 class JavaSettingsJsonTest : BaseImportTestCase() {
 
@@ -40,6 +41,8 @@ class JavaSettingsJsonTest : BaseImportTestCase() {
         """.trimIndent()
 
     fun testJavaSettingsJsonConfig() {
+        println("JAVAHOME1: " + SystemProperties.getJavaHome())
+        println("JAVAHOME2: " + SystemProperties.getJavaHome().replace('/', File.separatorChar))
 
         setFileText(myLaunchFile, launchFileContent)
 
