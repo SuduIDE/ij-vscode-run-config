@@ -50,7 +50,7 @@ class JavaAppAllPropertiesConfig: BaseImportTestCase() {
     private val xmlOutput: String = """
         <component name="ProjectRunConfigurationManager">
           <configuration name="All properties" type="Application" factoryName="Application">
-            <option name="ALTERNATIVE_JRE_PATH" value="$javaHome" />
+            <option name="ALTERNATIVE_JRE_PATH" value="${SystemProperties.getJavaHome()}" />
             <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
             <classpathModifications>
               <entry exclude="true" path="/exclude/module/path/boo1" />
