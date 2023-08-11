@@ -3,7 +3,7 @@ package org.rri.ij_vscode_run_config
 import com.intellij.execution.RunManager
 import org.intellij.lang.annotations.Language
 
-class JavaAppCurrentConfigTest: BaseImportTestCase() {
+class JavaAppCurrentConfigTest : BaseImportTestCase() {
 
     @Language("JSON")
     private val launchFileContent: String = """

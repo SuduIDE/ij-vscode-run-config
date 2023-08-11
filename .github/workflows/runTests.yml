@@ -27,8 +27,8 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-#      - name: Build with Gradle
-#        run: ./gradlew buildPlugin
+      - name: Build with Gradle
+        run: ./gradlew buildPlugin
 
       - name: Run tests with Gradle
         run: ./gradlew test

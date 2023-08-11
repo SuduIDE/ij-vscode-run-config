@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.JDOMUtil
 import org.jdom.Element
 import org.rri.ij_vscode_run_config.ImportWarning
-import org.rri.ij_vscode_run_config.VariableRepository
 
 abstract class ConfigBuilderBase(protected var name: String, protected val project: Project) {
 
@@ -32,8 +31,6 @@ abstract class ConfigBuilderBase(protected var name: String, protected val proje
     }
 
     fun build(runManager: RunManager): RunnerAndConfigurationSettings {
-        println("BEFORE BUILD: $name")
-
         config.checkConfiguration()
 
         if (hasSamePropertiesConfiguration(runManager))
@@ -44,7 +41,6 @@ abstract class ConfigBuilderBase(protected var name: String, protected val proje
             config.name = name
         }
 
-        println("AFTER BUILD: $name")
         return runManager.createConfiguration(config, factory)
     }
 

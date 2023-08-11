@@ -9,7 +9,8 @@ import java.util.regex.Pattern
 
 object VariableRepository {
     private val pattern: Pattern = Pattern.compile("\\$\\{(([a-zA-Z]|[0-9])+)}")
-    private val unsupportedPattern: Pattern = Pattern.compile("\\$\\{((input:)|(command:)|(config:))([a-zA-Z]|[0-9]|[^\\w\\s])*}")
+    private val unsupportedPattern: Pattern =
+        Pattern.compile("\\$\\{((input:)|(command:)|(config:))([a-zA-Z]|[0-9]|[^\\w\\s])*}")
     private val envPattern: Pattern = Pattern.compile("\\$\\{(env:)([a-zA-Z]|[0-9]|[^\\w\\s])*}")
 
     private val varMap: MutableMap<String, String> = HashMap()

@@ -5,7 +5,6 @@ import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.components.PathMacroManager
-import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.HeavyTestHelper
 import com.intellij.testFramework.JavaProjectTestCase
@@ -77,14 +76,8 @@ abstract class BaseImportTestCase : JavaProjectTestCase() {
             saveSettings(project)
         }
 
-        println("FILEPATH: $filePath")
-
-//        val vFile: VirtualFile = LocalFileSystem.getInstance().findFileByIoFile(filePath.toFile())!!
-//        val actual: String =
-//            PathMacroManager.getInstance(project).expandPath(String(vFile.contentsToByteArray(), vFile.charset))
-        val actual: String = PathMacroManager.getInstance(project).expandPath(PlatformTestUtil.loadFileText(filePath.toString()))
-        println("ACTUAL: $actual")
-        println("EXPECTED: $expected")
+        val actual: String =
+            PathMacroManager.getInstance(project).expandPath(PlatformTestUtil.loadFileText(filePath.toString()))
         assertEquals(expected, actual)
     }
 

@@ -6,7 +6,7 @@ import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.util.SystemProperties
 import org.intellij.lang.annotations.Language
 
-class JavaAppAllPropertiesConfig: BaseImportTestCase() {
+class JavaAppAllPropertiesConfig : BaseImportTestCase() {
 
     private val javaExec = if (SystemInfo.isWindows) PlatformTestUtil.getJavaExe().replace("\\", "\\\\") else PlatformTestUtil.getJavaExe()
     private val javaHome = if (SystemInfo.isWindows) SystemProperties.getJavaHome().replace("\\", "\\\\") else SystemProperties.getJavaHome()
@@ -89,9 +89,7 @@ class JavaAppAllPropertiesConfig: BaseImportTestCase() {
         setFileText(envFile, envFileContent)
 
         val importConfigManager = ImportConfigManager(project, myContext)
-        println("BEFORE ALL PROPERTIES PROCESS")
         importConfigManager.process()
-        println("AFTER ALL PROPERTIES PROCESS")
 
         assertSameFileWithText(xmlOutput, getOutPath().resolve("All_properties.xml"))
     }

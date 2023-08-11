@@ -38,7 +38,7 @@ import java.util.stream.Collectors
 import kotlin.io.path.absolutePathString
 
 
-class JavaAppConfigBuilder(name: String, project: Project): ConfigBuilderBase(name, project) {
+class JavaAppConfigBuilder(name: String, project: Project) : ConfigBuilderBase(name, project) {
 
     override val factory: ConfigurationFactory =
         runConfigurationType<ApplicationConfigurationType>().configurationFactories[0]
@@ -49,7 +49,6 @@ class JavaAppConfigBuilder(name: String, project: Project): ConfigBuilderBase(na
     ) as ApplicationConfiguration
 
     fun setMainClass(value: JsonElement?): JavaAppConfigBuilder {
-        println("BEFORE MAINCLASS: $name")
         val mainClassStr = value?.jsonPrimitive?.content ?: throw ImportError("Main class is not specified")
 
         if (VariableRepository.contains(mainClassStr)) {
@@ -66,7 +65,6 @@ class JavaAppConfigBuilder(name: String, project: Project): ConfigBuilderBase(na
         } ?: throw ImportError("Cannot find specified main class: $mainClassStr")
 
         config.setMainClass(mainClass)
-        println("AFTER MAINCLASS: $name")
         return this
     }
 
@@ -93,7 +91,6 @@ class JavaAppConfigBuilder(name: String, project: Project): ConfigBuilderBase(na
     }
 
     fun setJavaExec(value: JsonElement?, context: DataContext): JavaAppConfigBuilder {
-        println("BEFORE JAVAEXEC: $name")
         var javaExecStr: String? = null
         if (value.runCatching { value?.jsonArray != null }.getOrElse { false }) {
             for (jre: JsonElement in value!!.jsonArray) {
@@ -112,7 +109,6 @@ class JavaAppConfigBuilder(name: String, project: Project): ConfigBuilderBase(na
             throw ImportError("Specified JDK/JRE path is invalid: $javaExecStr")
         }
 
-        println("AFTER JAVAEXEC: $name")
         return this
     }
 
@@ -124,7 +120,6 @@ class JavaAppConfigBuilder(name: String, project: Project): ConfigBuilderBase(na
                 JavaParametersUtil.checkAlternativeJRE(javaPath.toString())
                 config.alternativeJrePath = javaPath.toString()
                 config.isAlternativeJrePathEnabled = true
-                println("JAVAEXEC: $value")
                 return true
             } catch (exc: RuntimeConfigurationWarning) {
                 javaPath = javaPath.parent
@@ -135,7 +130,6 @@ class JavaAppConfigBuilder(name: String, project: Project): ConfigBuilderBase(na
 
     // ! Advanced Substitution
     fun setProgramArgs(value: JsonElement?): JavaAppConfigBuilder {
-        println("BEFORE ARGS: $name")
         if (value.runCatching { value?.jsonPrimitive != null }.getOrElse { false }) {
             config.programParameters = VariableRepository.substituteAllVariables(value!!.jsonPrimitive.content)
         } else if (value?.jsonArray != null) {
@@ -144,14 +138,12 @@ class JavaAppConfigBuilder(name: String, project: Project): ConfigBuilderBase(na
             }.collect(Collectors.joining(" "))
         }
 
-        println("AFTER ARGS: $name")
         return this
     }
 
     // ! $Auto $Runtime $Test
     // ! Advanced Substitution
     fun setModulePaths(value: JsonElement?, context: DataContext): JavaAppConfigBuilder {
-        println("BEFORE MODULEPATHS: $name")
         val modulePaths = LinkedList<ModuleBasedConfigurationOptions.ClasspathModification>()
 
         if (value != null) {
@@ -161,14 +153,12 @@ class JavaAppConfigBuilder(name: String, project: Project): ConfigBuilderBase(na
         }
 
         config.classpathModifications.addAll(modulePaths)
-        println("AFTER MODULEPATHS: $name")
         return this
     }
 
     // ! $Auto $Runtime $Test
     // ! Advanced Substitution
     fun setClassPaths(value: JsonElement?, context: DataContext): JavaAppConfigBuilder {
-        println("BEFORE CLASSPATHS: $name")
         val classPaths = LinkedList<ModuleBasedConfigurationOptions.ClasspathModification>()
 
         if (value != null) {
@@ -178,7 +168,6 @@ class JavaAppConfigBuilder(name: String, project: Project): ConfigBuilderBase(na
         }
 
         config.classpathModifications.addAll(classPaths)
-        println("AFTER CLASSPATHS: $name")
         return this
     }
 
@@ -200,7 +189,6 @@ class JavaAppConfigBuilder(name: String, project: Project): ConfigBuilderBase(na
 
     // ! Advanced Substitution
     fun setVMArgs(value: JsonElement?): JavaAppConfigBuilder {
-        println("BEFORE VMARGS: $name")
         val vmArgsBuilder: StringBuilder = StringBuilder()
 
         if (value.runCatching { value?.jsonPrimitive != null }.getOrElse { false }) {
@@ -219,25 +207,21 @@ class JavaAppConfigBuilder(name: String, project: Project): ConfigBuilderBase(na
             config.vmParameters = vmArgsBuilder.toString()
         }
 
-        println("AFTER VMARGS: $name")
         return this
     }
 
     // ! Advanced Substitution
     fun setWorkingDirectory(value: JsonElement?): JavaAppConfigBuilder {
-        println("BEFORE CWD: $name")
         if (value?.jsonPrimitive?.content != null) {
             config.workingDirectory = VariableRepository.substituteAllVariables(value.jsonPrimitive.content)
         } else {
             config.workingDirectory = project.guessProjectDir()?.path
         }
-        println("AFTER CWD: $name")
         return this
     }
 
     // ! Advanced Substitution
     fun setEnv(value: JsonElement?): JavaAppConfigBuilder {
-        println("BEFORE ENV: $name")
         if (value != null) {
             val envMap: MutableMap<String, String> = HashMap()
             for (entry in value.jsonObject.entries) {
@@ -247,12 +231,10 @@ class JavaAppConfigBuilder(name: String, project: Project): ConfigBuilderBase(na
             config.envs.plusAssign(envMap)
         }
 
-        println("AFTER ENV: $name")
         return this
     }
 
     fun setEnvFromFile(value: JsonElement?, context: DataContext): JavaAppConfigBuilder {
-        println("BEFORE ENVFILE: $name")
         if (value?.jsonPrimitive?.content != null) {
             val envMap: MutableMap<String, String> = HashMap()
             val envPath: Path = Paths.get(value.jsonPrimitive.content)
@@ -272,12 +254,10 @@ class JavaAppConfigBuilder(name: String, project: Project): ConfigBuilderBase(na
             config.envs.plusAssign(envMap)
         }
 
-        println("AFTER ENVFILE: $name")
         return this
     }
 
     fun setShortenCommandLine(value: JsonElement?): JavaAppConfigBuilder {
-        println("BEFORE SHORTENCOMMANDLINE: $name")
         if (value?.jsonPrimitive?.content != null) {
             config.shortenCommandLine = when (value.jsonPrimitive.content) {
                 "none" -> ShortenCommandLine.NONE
@@ -287,18 +267,15 @@ class JavaAppConfigBuilder(name: String, project: Project): ConfigBuilderBase(na
             }
         }
 
-        println("AFTER SHORTENCOMMANDLINE: $name")
         return this
     }
 
     fun setEncoding(value: JsonElement?): JavaAppConfigBuilder {
-        println("BEFORE ENCODING: $name")
         val encoding: String? = value?.jsonPrimitive?.content
         if (encoding != null) {
             config.vmParameters += " -Dfile.encoding=$encoding"
         }
 
-        println("AFTER ENCODING: $name")
         return this
     }
 

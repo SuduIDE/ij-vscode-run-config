@@ -179,4 +179,5 @@ class MultipleConfigsTest : BaseImportTestCase() {
         assertSameFileWithText(thirdXmlOutput, getOutPath().resolve("Third.xml"))
         assertSameFileWithText(fourthXmlOutput, getOutPath().resolve("Fourth__remote_.xml"))
     }
+
 }

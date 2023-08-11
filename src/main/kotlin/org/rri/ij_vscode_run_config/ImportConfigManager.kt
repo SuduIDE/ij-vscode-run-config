@@ -18,51 +18,43 @@ class ImportConfigManager(private val project: Project, private val context: Dat
     private val runManager = RunManager.getInstance(project)
 
     fun process() {
-        println("TUT1")
         val vscodeFolder: VirtualFile = project.guessProjectDir()?.findChild(".vscode")
             ?: return
 
         val launchElement: JsonElement? = getJsonFromFileInFolder(vscodeFolder, "launch.json")
-        println("TUT2")
         val launchJson = launchElement?.jsonObject?.get("configurations")?.jsonArray?.map { j -> j.jsonObject }
             ?: return
         val settingsJson: JsonObject? = getJsonFromFileInFolder(vscodeFolder, "settings.json")?.jsonObject
 
         if (settingsJson == null)
-            println("NO SETTINGS")
 
-        println("TUT3")
-        for (cfgJson: JsonObject in launchJson) {
-            if (cfgJson["type"]?.jsonPrimitive?.content != "java")
-                continue
+            for (cfgJson: JsonObject in launchJson) {
+                if (cfgJson["type"]?.jsonPrimitive?.content != "java")
+                    continue
 
-            val cfgName: String? = cfgJson["name"]?.jsonPrimitive?.content
-            if (cfgName == null || VariableRepository.contains(cfgName))
-                continue
+                val cfgName: String? = cfgJson["name"]?.jsonPrimitive?.content
+                if (cfgName == null || VariableRepository.contains(cfgName))
+                    continue
 
-            try {
-                println("BEFORE CREATION: $cfgName")
-                val config = createJavaConfiguration(cfgName, cfgJson, settingsJson)
+                try {
+                    val config = createJavaConfiguration(cfgName, cfgJson, settingsJson)
 
-                config.storeInDotIdeaFolder()
-                runManager.addConfiguration(config)
+                    config.storeInDotIdeaFolder()
+                    runManager.addConfiguration(config)
 
-                if (runManager.selectedConfiguration == null) {
-                    runManager.selectedConfiguration = config
+                    if (runManager.selectedConfiguration == null) {
+                        runManager.selectedConfiguration = config
+                    }
+                } catch (exc: ImportError) {
+                    println(exc.message)
+                } catch (exc: ImportWarning) {
+                    println(exc.message)
+                } catch (exc: RuntimeConfigurationException) {
+                    println(exc.message)
+                } catch (exc: NullPointerException) {
+                    println(exc.message)
                 }
-
-                println("AFTER CREATION: $cfgName")
-                println("GOOD: $cfgName")
-            } catch (exc: ImportError) {
-                println(exc.message)
-            } catch (exc: ImportWarning){
-                println(exc.message)
-            } catch (exc: RuntimeConfigurationException) {
-                println(exc.message)
-            } catch (exc: NullPointerException) {
-                println(exc.message)
             }
-        }
     }
 
     private fun createJavaConfiguration(
@@ -108,19 +100,15 @@ class ImportConfigManager(private val project: Project, private val context: Dat
     }
 
     private fun getJsonFromFileInFolder(folder: VirtualFile, filename: String): JsonElement? {
-        println("JSON TUT1")
         val file: VirtualFile? =
             LocalFileSystem.getInstance().findFileByIoFile(folder.toNioPath().resolve(filename).toFile())
 
-        println("JSON TUT2")
         if (file == null || !file.isValid)
             return null
 
-        println("JSON TUT3")
         val content = String(file.contentsToByteArray(), file.charset)
         val json: JsonElement? = Json.runCatching { parseToJsonElement(content) }.getOrNull()
 
-        println("JSON TUT4")
         return json?.jsonObject
     }
 }

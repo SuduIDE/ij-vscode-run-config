@@ -49,9 +49,3 @@ tasks {
     token.set(System.getenv("PUBLISH_TOKEN"))
   }
 }
-
-tasks.withType<Test> {
-  this.testLogging {
-    this.showStandardStreams = true
-  }
-}
