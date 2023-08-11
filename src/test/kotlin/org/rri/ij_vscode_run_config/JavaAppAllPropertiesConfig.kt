@@ -21,6 +21,7 @@ class JavaAppAllPropertiesConfig: BaseImportTestCase() {
                         "TEST_VAR_FOO": "foo",
                         "TEST_VAR_BAR": "bar"
                     },
+                    "envFile": "${'$'}{fileWorkspaceFolder}/.env",
                     "cwd": "${'$'}{workspaceFolder}",
 
                     "mainClass": "example.Main",
@@ -55,6 +56,8 @@ class JavaAppAllPropertiesConfig: BaseImportTestCase() {
             <envs>
               <env name="TEST_VAR_FOO" value="foo" />
               <env name="TEST_VAR_BAR" value="bar" />
+              <env name="IMPORT" value="TOOL" />
+              <env name="TWO_PLUS_TWO" value="FOUR" />
             </envs>
             <option name="MAIN_CLASS_NAME" value="example.Main" />
             <module name="VSCode_Import_Run_Config_Test" />
@@ -77,8 +80,8 @@ class JavaAppAllPropertiesConfig: BaseImportTestCase() {
     fun testJavaAppAllPropertiesConfig() {
         setFileText(myLaunchFile, launchFileContent)
 
-//        val envFile: VirtualFile = createChildData(myRoot, ".env")
-//        setFileText(envFile, envFileContent)
+        val envFile: VirtualFile = createChildData(myRoot, ".env")
+        setFileText(envFile, envFileContent)
 
         val importConfigManager = ImportConfigManager(project, myContext)
         importConfigManager.process()

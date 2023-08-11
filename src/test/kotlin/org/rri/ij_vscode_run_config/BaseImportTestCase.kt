@@ -79,6 +79,7 @@ abstract class BaseImportTestCase : JavaProjectTestCase() {
         val vFile: VirtualFile = LocalFileSystem.getInstance().findFileByIoFile(filePath.toFile())!!
         val actual: String =
             PathMacroManager.getInstance(project).expandPath(String(vFile.contentsToByteArray(), vFile.charset))
+        println(actual)
         assertEquals(expected, actual)
     }
 
