@@ -78,6 +78,8 @@ class JavaAppAllPropertiesConfig: BaseImportTestCase() {
     """.trimIndent()
 
     fun testJavaAppAllPropertiesConfig() {
+        println("JAVAHOME: " + IdeaTestUtil.requireRealJdkHome())
+
         setFileText(myLaunchFile, launchFileContent)
 
         val envFile: VirtualFile = createChildData(myRoot, ".env")

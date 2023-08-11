@@ -65,6 +65,8 @@ class JavaSettingsJsonTest : BaseImportTestCase() {
     }
 
     fun testJavaSettingsJsonConfig() {
+        println("JAVAHOME: " + IdeaTestUtil.requireRealJdkHome())
+
         setFileText(myLaunchFile, launchFileContent)
 
         val importConfigManager = ImportConfigManager(project, myContext)
