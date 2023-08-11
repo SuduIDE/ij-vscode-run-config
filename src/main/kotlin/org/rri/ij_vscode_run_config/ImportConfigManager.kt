@@ -34,7 +34,7 @@ class ImportConfigManager(private val project: Project, private val context: Dat
             if (cfgName == null || VariableRepository.contains(cfgName))
                 continue
 
-//            try {
+            try {
                 val config = createJavaConfiguration(cfgName, cfgJson, settingsJson)
 
                 config.storeInDotIdeaFolder()
@@ -46,13 +46,13 @@ class ImportConfigManager(private val project: Project, private val context: Dat
 
 //            } catch (exc: ImportError) {
 //                println(exc.message)
-//            } catch (exc: ImportWarning){
-//                println(exc.message)
+            } catch (exc: ImportWarning){
+                println(exc.message)
 //            } catch (exc: RuntimeConfigurationException) {
 //                println(exc.message)
 //            } catch (exc: NullPointerException) {
 //                println(exc.message)
-//            }
+            }
         }
     }
 
