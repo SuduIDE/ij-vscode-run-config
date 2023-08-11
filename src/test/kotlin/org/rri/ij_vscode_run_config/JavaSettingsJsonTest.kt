@@ -1,10 +1,14 @@
 package org.rri.ij_vscode_run_config
 
+import com.intellij.execution.RunManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.IdeaTestUtil
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.util.SystemProperties
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
 import org.intellij.lang.annotations.Language
+import org.rri.ij_vscode_run_config.builders.JavaAppConfigBuilder
 import java.io.File
 
 class JavaSettingsJsonTest : BaseImportTestCase() {
@@ -42,12 +46,7 @@ class JavaSettingsJsonTest : BaseImportTestCase() {
         """.trimIndent()
 
     fun testJavaSettingsJsonConfig() {
-        println("JAVAHOME1: " + SystemProperties.getJavaHome())
-        println("JAVAHOME2: " + SystemProperties.getJavaHome().replace('/', File.separatorChar))
-
         setFileText(myLaunchFile, launchFileContent)
-
-        PlatformTestUtil.getJavaExe()
 
         @Language("JSON")
         val settingsFileContent: String = """
@@ -67,6 +66,15 @@ class JavaSettingsJsonTest : BaseImportTestCase() {
             ]
         }
         """.trimIndent()
+
+        try {
+            val builder = JavaAppConfigBuilder("Test", project)
+                .setMainClass(JsonPrimitive("example.Main"))
+                .setJavaExec(JsonPrimitive(SystemProperties.getJavaHome()), myContext)
+                .build(RunManager.getInstance(project))
+        } catch (exc: Throwable) {
+            println("OOPS")
+        }
 
         val settingsFile: VirtualFile = createChildData(myVSCodeFolder, "settings.json")
         setFileText(settingsFile, settingsFileContent)

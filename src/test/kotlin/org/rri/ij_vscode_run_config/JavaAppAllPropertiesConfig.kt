@@ -1,9 +1,12 @@
 package org.rri.ij_vscode_run_config
 
+import com.intellij.execution.RunManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.util.SystemProperties
+import kotlinx.serialization.json.JsonPrimitive
 import org.intellij.lang.annotations.Language
+import org.rri.ij_vscode_run_config.builders.JavaAppConfigBuilder
 import java.io.File
 import java.nio.file.Paths
 
@@ -81,9 +84,6 @@ class JavaAppAllPropertiesConfig: BaseImportTestCase() {
     """.trimIndent()
 
     fun testJavaAppAllPropertiesConfig() {
-        println("JAVAHOME1: " + SystemProperties.getJavaHome())
-        println("JAVAHOME2: " + SystemProperties.getJavaHome().replace('/', File.separatorChar))
-
         setFileText(myLaunchFile, launchFileContent)
 
         val envFile: VirtualFile = createChildData(myRoot, ".env")
@@ -91,6 +91,15 @@ class JavaAppAllPropertiesConfig: BaseImportTestCase() {
 
         val importConfigManager = ImportConfigManager(project, myContext)
         importConfigManager.process()
+
+        try {
+            val builder = JavaAppConfigBuilder("Test", project)
+                .setMainClass(JsonPrimitive("example.Main"))
+                .setJavaExec(JsonPrimitive(SystemProperties.getJavaHome()), myContext)
+                .build(RunManager.getInstance(project))
+        } catch (exc: Throwable) {
+            println("OOPS")
+        }
 
         assertSameFileWithText(xmlOutput, getOutPath().resolve("All_properties.xml"))
     }
