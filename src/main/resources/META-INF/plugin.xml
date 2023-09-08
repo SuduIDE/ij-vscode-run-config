@@ -1,0 +1,66 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+  <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+  <id>org.rri.ij_vscode_run_config</id>
+
+  <!-- Public plugin name should be written in Title Case.
+       Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+  <name>Ij_vscode_run_config</name>
+
+  <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+  <vendor email="" url="https://github.com/SuduIDE">SuduIDE</vendor>
+
+  <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+       Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+       Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+  <description><![CDATA[
+    A simple IJ IDEA plugin which imports Run/Debug configurations from VSCode projects to IJ IDEA projects.
+
+    For more information follow GitHub repo.
+  ]]></description>
+
+  <!-- Product and plugin compatibility requirements.
+       Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.java</depends>
+  <depends>com.jetbrains.sh</depends>
+  <depends>org.jetbrains.idea.maven</depends>
+  <depends>org.jetbrains.plugins.gradle</depends>
+
+  <!-- Extension points defined by the plugin.
+       Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+  <extensions defaultExtensionNs="com.intellij">
+    <backgroundPostStartupActivity implementation="org.rri.ij_vscode_run_config.ux.PostStartupActivity"/>
+    <notificationGroup id="VSCode Import Notification Group"
+                       displayType="BALLOON"/>
+  </extensions>
+
+  <actions>
+
+    <action
+      id="org.rri.ij_vscode_run_config.ux.actions.ImportSpecificAction"
+      class="org.rri.ij_vscode_run_config.ux.actions.ImportSpecificAction"
+      text="Import Specific Run Configurations from VSCode..."
+      description="Choose specific run configurations from .vscode and import them"
+      icon="vscode_logo_pick.svg">
+      <add-to-group group-id="RunMenu" anchor="after" relative-to-action="editRunConfigurations"/>
+    </action>
+
+    <action
+      id="org.rri.ij_vscode_run_config.ux.actions.ImportAllAction"
+      class="org.rri.ij_vscode_run_config.ux.actions.ImportAllAction"
+      text="Import All Run Configurations from VSCode"
+      description="Import all run configurations from .vscode folder"
+      icon="vscode_logo.svg">
+      <add-to-group group-id="RunMenu" anchor="after" relative-to-action="editRunConfigurations"/>
+    </action>
+
+  </actions>
+  
+  <projectListeners>
+    <listener
+      class="org.rri.ij_vscode_run_config.logic.VSCodeFolderListener"
+      topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
+  </projectListeners>
+
+</idea-plugin>
