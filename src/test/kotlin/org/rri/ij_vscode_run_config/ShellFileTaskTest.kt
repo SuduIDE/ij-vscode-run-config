@@ -1,7 +1,7 @@
 package org.rri.ij_vscode_run_config
 
 import com.intellij.openapi.util.SystemInfo
-import com.jetbrains.rd.util.printlnError
+import com.intellij.util.io.systemIndependentPath
 import org.intellij.lang.annotations.Language
 import org.rri.ij_vscode_run_config.logic.ImportManager
 import java.io.File
@@ -11,6 +11,8 @@ class ShellFileTaskTest : BaseImportTestCase() {
 
     private val scriptPath: Path = Path.of("scripts")
         .resolve(if (SystemInfo.isWindows) "Shell_file_task.ps1" else "Shell_file_task.sh")
+
+    private val scriptPathJson: String = "${'$'}{workspaceFolder}${File.separator}$scriptPath".replace("\\", "\\\\")
 
     fun testShellFileTaskCommand() {
         setFileText(myTasksFile, getTasksJsonContentShellCommand())
@@ -25,14 +27,9 @@ class ShellFileTaskTest : BaseImportTestCase() {
     fun testShellFileTask() {
         setFileText(myTasksFile, getTasksJsonContentShellFile())
 
-        println("HEHEHEHE")
-        println(getTasksJsonContentShellFile())
-
         val scriptsDir = createChildDirectory(myRoot, "scripts")
         val scriptFile = createChildData(scriptsDir, scriptPath.fileName.toString())
         setFileText(scriptFile, "echo 'Hello, world!'")
-
-        println(scriptFile.path)
 
         val importManager = ImportManager(project, myContext)
         importManager.deserialize()
@@ -110,7 +107,7 @@ class ShellFileTaskTest : BaseImportTestCase() {
                 {
                     "label": "Shell file task",
                     "type": "shell",
-                    "command": "${'$'}{workspaceFolder}${File.separator}$scriptPath",
+                    "command": "$scriptPathJson",
                     "args": ["Hello,", "world!"]
                 }
             ]
@@ -126,10 +123,10 @@ class ShellFileTaskTest : BaseImportTestCase() {
         <component name="ProjectRunConfigurationManager">
           <configuration name="Shell file task$configNameSuffix" type="ShConfigurationType">
             <option name="SCRIPT_TEXT" value="" />
-            <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
-            <option name="SCRIPT_PATH" value="${'$'}PROJECT_DIR${'$'}/$scriptPath" />
+            <option name="INDEPENDENT_SCRIPT_PATH" value="false" />
+            <option name="SCRIPT_PATH" value="${'$'}PROJECT_DIR${'$'}/${scriptPath.systemIndependentPath}" />
             <option name="SCRIPT_OPTIONS" value="Hello, world!" />
-            <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="$workingDirectoryPathEqualsIndependent" />
+            <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
             <option name="SCRIPT_WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
             <option name="INDEPENDENT_INTERPRETER_PATH" value="$interpreterPathEqualsIndependent" />
             <option name="INTERPRETER_PATH" value="$interpreterPath" />
