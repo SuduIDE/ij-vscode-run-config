@@ -78,9 +78,9 @@ class ShellFileTaskTest : BaseImportTestCase() {
             <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
             <option name="SCRIPT_PATH" value="" />
             <option name="SCRIPT_OPTIONS" value="Hello, world!" />
-            <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="$workingDirectoryPathEqualsIndependent" />
+            <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="$pathEqualsIndependent" />
             <option name="SCRIPT_WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
-            <option name="INDEPENDENT_INTERPRETER_PATH" value="$interpreterPathEqualsIndependent" />
+            <option name="INDEPENDENT_INTERPRETER_PATH" value="$pathEqualsIndependent" />
             <option name="INTERPRETER_PATH" value="$interpreterPath" />
             <option name="INTERPRETER_OPTIONS" value="-c" />
             <option name="EXECUTE_IN_TERMINAL" value="true" />
@@ -123,12 +123,12 @@ class ShellFileTaskTest : BaseImportTestCase() {
         <component name="ProjectRunConfigurationManager">
           <configuration name="Shell file task$configNameSuffix" type="ShConfigurationType">
             <option name="SCRIPT_TEXT" value="" />
-            <option name="INDEPENDENT_SCRIPT_PATH" value="false" />
+            <option name="INDEPENDENT_SCRIPT_PATH" value="$pathEqualsIndependent" />
             <option name="SCRIPT_PATH" value="${'$'}PROJECT_DIR${'$'}/${scriptPath.systemIndependentPath}" />
             <option name="SCRIPT_OPTIONS" value="Hello, world!" />
             <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
             <option name="SCRIPT_WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
-            <option name="INDEPENDENT_INTERPRETER_PATH" value="$interpreterPathEqualsIndependent" />
+            <option name="INDEPENDENT_INTERPRETER_PATH" value="$pathEqualsIndependent" />
             <option name="INTERPRETER_PATH" value="$interpreterPath" />
             <option name="INTERPRETER_OPTIONS" value="" />
             <option name="EXECUTE_IN_TERMINAL" value="true" />

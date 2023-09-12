@@ -254,7 +254,7 @@ class DependenciesTest : BaseImportTestCase() {
             <option name="SCRIPT_OPTIONS" value="" />
             <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
             <option name="SCRIPT_WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
-            <option name="INDEPENDENT_INTERPRETER_PATH" value="$interpreterPathEqualsIndependent" />
+            <option name="INDEPENDENT_INTERPRETER_PATH" value="$pathEqualsIndependent" />
             <option name="INTERPRETER_PATH" value="$interpreterPath" />
             <option name="INTERPRETER_OPTIONS" value="" />
             <option name="EXECUTE_IN_TERMINAL" value="true" />
@@ -279,7 +279,7 @@ class DependenciesTest : BaseImportTestCase() {
                 <option name="SCRIPT_OPTIONS" value="" />
                 <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
                 <option name="SCRIPT_WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
-                <option name="INDEPENDENT_INTERPRETER_PATH" value="$interpreterPathEqualsIndependent" />
+                <option name="INDEPENDENT_INTERPRETER_PATH" value="$pathEqualsIndependent" />
                 <option name="INTERPRETER_PATH" value="$interpreterPath" />
                 <option name="INTERPRETER_OPTIONS" value="" />
                 <option name="EXECUTE_IN_TERMINAL" value="true" />
@@ -308,7 +308,7 @@ class DependenciesTest : BaseImportTestCase() {
             <option name="SCRIPT_OPTIONS" value="" />
             <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
             <option name="SCRIPT_WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
-            <option name="INDEPENDENT_INTERPRETER_PATH" value="$interpreterPathEqualsIndependent" />
+            <option name="INDEPENDENT_INTERPRETER_PATH" value="$pathEqualsIndependent" />
             <option name="INTERPRETER_PATH" value="$interpreterPath" />
             <option name="INTERPRETER_OPTIONS" value="" />
             <option name="EXECUTE_IN_TERMINAL" value="true" />
@@ -351,7 +351,7 @@ class DependenciesTest : BaseImportTestCase() {
             <option name="SCRIPT_OPTIONS" value="" />
             <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
             <option name="SCRIPT_WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
-            <option name="INDEPENDENT_INTERPRETER_PATH" value="$interpreterPathEqualsIndependent" />
+            <option name="INDEPENDENT_INTERPRETER_PATH" value="$pathEqualsIndependent" />
             <option name="INTERPRETER_PATH" value="$interpreterPath" />
             <option name="INTERPRETER_OPTIONS" value="" />
             <option name="EXECUTE_IN_TERMINAL" value="true" />
@@ -376,7 +376,7 @@ class DependenciesTest : BaseImportTestCase() {
             <option name="SCRIPT_OPTIONS" value="" />
             <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
             <option name="SCRIPT_WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
-            <option name="INDEPENDENT_INTERPRETER_PATH" value="$interpreterPathEqualsIndependent" />
+            <option name="INDEPENDENT_INTERPRETER_PATH" value="$pathEqualsIndependent" />
             <option name="INTERPRETER_PATH" value="$interpreterPath" />
             <option name="INTERPRETER_OPTIONS" value="" />
             <option name="EXECUTE_IN_TERMINAL" value="true" />
@@ -404,7 +404,7 @@ class DependenciesTest : BaseImportTestCase() {
             <option name="SCRIPT_OPTIONS" value="" />
             <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
             <option name="SCRIPT_WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
-            <option name="INDEPENDENT_INTERPRETER_PATH" value="$interpreterPathEqualsIndependent" />
+            <option name="INDEPENDENT_INTERPRETER_PATH" value="$pathEqualsIndependent" />
             <option name="INTERPRETER_PATH" value="$interpreterPath" />
             <option name="INTERPRETER_OPTIONS" value="" />
             <option name="EXECUTE_IN_TERMINAL" value="true" />
@@ -429,7 +429,7 @@ class DependenciesTest : BaseImportTestCase() {
             <option name="SCRIPT_OPTIONS" value="" />
             <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
             <option name="SCRIPT_WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
-            <option name="INDEPENDENT_INTERPRETER_PATH" value="$interpreterPathEqualsIndependent" />
+            <option name="INDEPENDENT_INTERPRETER_PATH" value="$pathEqualsIndependent" />
             <option name="INTERPRETER_PATH" value="$interpreterPath" />
             <option name="INTERPRETER_OPTIONS" value="" />
             <option name="EXECUTE_IN_TERMINAL" value="true" />
@@ -454,7 +454,7 @@ class DependenciesTest : BaseImportTestCase() {
             <option name="SCRIPT_OPTIONS" value="" />
             <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
             <option name="SCRIPT_WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
-            <option name="INDEPENDENT_INTERPRETER_PATH" value="$interpreterPathEqualsIndependent" />
+            <option name="INDEPENDENT_INTERPRETER_PATH" value="$pathEqualsIndependent" />
             <option name="INTERPRETER_PATH" value="$interpreterPath" />
             <option name="INTERPRETER_OPTIONS" value="" />
             <option name="EXECUTE_IN_TERMINAL" value="true" />
@@ -479,7 +479,7 @@ class DependenciesTest : BaseImportTestCase() {
             <option name="SCRIPT_OPTIONS" value="" />
             <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
             <option name="SCRIPT_WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
-            <option name="INDEPENDENT_INTERPRETER_PATH" value="$interpreterPathEqualsIndependent" />
+            <option name="INDEPENDENT_INTERPRETER_PATH" value="$pathEqualsIndependent" />
             <option name="INTERPRETER_PATH" value="$interpreterPath" />
             <option name="INTERPRETER_OPTIONS" value="" />
             <option name="EXECUTE_IN_TERMINAL" value="true" />
@@ -504,7 +504,7 @@ class DependenciesTest : BaseImportTestCase() {
             <option name="SCRIPT_OPTIONS" value="" />
             <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
             <option name="SCRIPT_WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
-            <option name="INDEPENDENT_INTERPRETER_PATH" value="$interpreterPathEqualsIndependent" />
+            <option name="INDEPENDENT_INTERPRETER_PATH" value="$pathEqualsIndependent" />
             <option name="INTERPRETER_PATH" value="$interpreterPath" />
             <option name="INTERPRETER_OPTIONS" value="" />
             <option name="EXECUTE_IN_TERMINAL" value="true" />
@@ -529,7 +529,7 @@ class DependenciesTest : BaseImportTestCase() {
             <option name="SCRIPT_OPTIONS" value="" />
             <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
             <option name="SCRIPT_WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
-            <option name="INDEPENDENT_INTERPRETER_PATH" value="$interpreterPathEqualsIndependent" />
+            <option name="INDEPENDENT_INTERPRETER_PATH" value="$pathEqualsIndependent" />
             <option name="INTERPRETER_PATH" value="$interpreterPath" />
             <option name="INTERPRETER_OPTIONS" value="" />
             <option name="EXECUTE_IN_TERMINAL" value="true" />
@@ -554,7 +554,7 @@ class DependenciesTest : BaseImportTestCase() {
             <option name="SCRIPT_OPTIONS" value="" />
             <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
             <option name="SCRIPT_WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
-            <option name="INDEPENDENT_INTERPRETER_PATH" value="$interpreterPathEqualsIndependent" />
+            <option name="INDEPENDENT_INTERPRETER_PATH" value="$pathEqualsIndependent" />
             <option name="INTERPRETER_PATH" value="$interpreterPath" />
             <option name="INTERPRETER_OPTIONS" value="" />
             <option name="EXECUTE_IN_TERMINAL" value="true" />
@@ -598,7 +598,7 @@ class DependenciesTest : BaseImportTestCase() {
             <option name="SCRIPT_OPTIONS" value="" />
             <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
             <option name="SCRIPT_WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
-            <option name="INDEPENDENT_INTERPRETER_PATH" value="$interpreterPathEqualsIndependent" />
+            <option name="INDEPENDENT_INTERPRETER_PATH" value="$pathEqualsIndependent" />
             <option name="INTERPRETER_PATH" value="$interpreterPath" />
             <option name="INTERPRETER_OPTIONS" value="" />
             <option name="EXECUTE_IN_TERMINAL" value="true" />
@@ -623,7 +623,7 @@ class DependenciesTest : BaseImportTestCase() {
             <option name="SCRIPT_OPTIONS" value="" />
             <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
             <option name="SCRIPT_WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
-            <option name="INDEPENDENT_INTERPRETER_PATH" value="$interpreterPathEqualsIndependent" />
+            <option name="INDEPENDENT_INTERPRETER_PATH" value="$pathEqualsIndependent" />
             <option name="INTERPRETER_PATH" value="$interpreterPath" />
             <option name="INTERPRETER_OPTIONS" value="" />
             <option name="EXECUTE_IN_TERMINAL" value="true" />
@@ -648,7 +648,7 @@ class DependenciesTest : BaseImportTestCase() {
             <option name="SCRIPT_OPTIONS" value="" />
             <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
             <option name="SCRIPT_WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
-            <option name="INDEPENDENT_INTERPRETER_PATH" value="$interpreterPathEqualsIndependent" />
+            <option name="INDEPENDENT_INTERPRETER_PATH" value="$pathEqualsIndependent" />
             <option name="INTERPRETER_PATH" value="$interpreterPath" />
             <option name="INTERPRETER_OPTIONS" value="" />
             <option name="EXECUTE_IN_TERMINAL" value="true" />
@@ -673,7 +673,7 @@ class DependenciesTest : BaseImportTestCase() {
             <option name="SCRIPT_OPTIONS" value="" />
             <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
             <option name="SCRIPT_WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
-            <option name="INDEPENDENT_INTERPRETER_PATH" value="$interpreterPathEqualsIndependent" />
+            <option name="INDEPENDENT_INTERPRETER_PATH" value="$pathEqualsIndependent" />
             <option name="INTERPRETER_PATH" value="$interpreterPath" />
             <option name="INTERPRETER_OPTIONS" value="" />
             <option name="EXECUTE_IN_TERMINAL" value="true" />

@@ -40,8 +40,7 @@ abstract class BaseImportTestCase : JavaProjectTestCase() {
     protected val javaHome: String = if (SystemInfo.isWindows) SystemProperties.getJavaHome().replace("\\", "\\\\") else SystemProperties.getJavaHome()
 
     protected val defaultShell: String = if (SystemInfo.isWindows) "pws" else "bash"
-    protected var interpreterPathEqualsIndependent: Boolean = true
-    protected var workingDirectoryPathEqualsIndependent: Boolean = true
+    protected var pathEqualsIndependent: Boolean = true
     protected lateinit var interpreterPath: String
     protected lateinit var cwd: String
 
@@ -95,9 +94,8 @@ abstract class BaseImportTestCase : JavaProjectTestCase() {
         if (SystemInfo.isWindows) {
             val newPath: String = project.guessProjectDir()!!.toNioPath().relativize(Path.of(interpreterPath)).systemIndependentPath
             interpreterPath = "${'$'}PROJECT_DIR${'$'}" + '/' + newPath.removePrefix(project.guessProjectDir()!!.path)
-            interpreterPathEqualsIndependent = false
+            pathEqualsIndependent = false
             cwd = project.guessProjectDir()!!.toNioPath().toString()
-            workingDirectoryPathEqualsIndependent = false
         }
     }
 
